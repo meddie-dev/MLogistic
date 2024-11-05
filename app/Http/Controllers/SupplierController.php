@@ -10,17 +10,27 @@ use App\Models\SRegistration;
 use App\Models\SVehicleReservation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use Carbon\Carbon;
 
 
 class SupplierController extends Controller
 {
     public function index()
     {
+    
+        
         $user = Auth::user();
-        $documentCount = SDocument::where('supplier_id', $user->id)->count();
-
-        $users = Supplier::all();
-        return view('roles.supplier.dashboard', compact('documentCount'));
+        $documents = SDocument::where('supplier_id', $user->id)->get();
+        $reservation = SVehicleReservation::where('supplier_id', $user->id)->get();
+        // Count reservations by each status
+        $statusCounts = [
+            'Pending' => SVehicleReservation::where('status', 'Pending')->count(),
+            'Approved' => SVehicleReservation::where('status', 'Approved')->count(),
+            'Unapproved' => SVehicleReservation::where('status', 'Unapproved')->count(),
+        ];
+    
+        return view('roles.supplier.dashboard', compact('documents', 'statusCounts', 'reservation'));
     }
 
     //-------------------------------------------------------------------------------------------------------------------//
@@ -193,22 +203,55 @@ class SupplierController extends Controller
     public function vendorProfile()
     {
         $user = Auth::user();
-        $supplier = Supplier::where('user_id', Auth::id())->first();
-        return view('roles/supplier.vendor.profile', compact('supplier'));
+        $profile = SProfile::where('supplier_id', $user->id)->first();
+        $supplier = Supplier::where('user_id', $user->id)->first();
+        return view('roles/supplier.vendor.profile', compact('profile', 'supplier'));
     }
-    
-    public function editProfile($id)
+
+
+    public function createProfile()
     {
-        // Load the Supplier instance
-        $supplier = Supplier::findOrFail($id);
-    
-        // Retrieve or create an associated profile for the supplier
-        $profile = SProfile::where('supplier_id', $supplier->id)->firstOrFail();
-    
-        return view('roles/supplier.vendor.edit_profile', compact('supplier', 'profile'));
+        $user = Auth::user();
+        $supplier = Supplier::where('user_id', $user->id)->first();
+        return view('roles.supplier.vendor.create_profile' , compact('supplier'));
     }
-    
-    public function updateProfile(Request $request, Supplier $supplier)
+
+    public function storeProfile( Request $request , Supplier $supplier)
+    {
+        
+        $request->validate([
+            'vendor_name' => 'required|string|max:255',
+            'contact_person' => 'required|string|max:255',
+            'contact_email' => 'required|email|max:255',
+            'contact_phone' => 'required|string|max:15',
+            'business_address' => 'required|string',
+            'bio' => 'required|string|max:500'
+        ]);
+
+        // Create the supplier's profile
+        SProfile::create([
+            'supplier_id' => $supplier->id,
+            'vendor_name' => $request->vendor_name,
+            'contact_person' => $request->contact_person,
+            'contact_email' => $request->contact_email,
+            'contact_phone' => $request->contact_phone,
+            'business_address' => $request->business_address,
+            'bio' => $request->bio
+        ]);
+
+        return redirect()->route('vendor.profile')->with('success', 'Vendor profile created successfully.');
+
+    }
+
+    public function editProfile()
+    {
+        $user = Auth::user();
+        $supplier = Supplier::where('user_id', $user->id)->first();
+        $profile = SProfile::where('supplier_id', $user->id)->first();
+        return view('roles.supplier.vendor.edit_profile', compact('supplier', 'profile'));
+    }
+
+    public function updateProfile(Request $request,$id)
     {
         // Validate the incoming request data
         $request->validate([
@@ -219,36 +262,42 @@ class SupplierController extends Controller
             'business_address' => 'required|string',
             'bio' => 'required|string|max:500'
         ]);
-    
-        // Update the supplier details
-        $supplier->update([
+
+        $profile = SProfile::findOrFail($id);
+
+
+        // Update the supplier's profile
+        $profile->update([
+
             'vendor_name' => $request->vendor_name,
+            'contact_person' => $request->contact_person,
             'contact_email' => $request->contact_email,
+            'contact_phone' => $request->contact_phone,
+            'business_address' => $request->business_address,
+            'bio' => $request->bio
         ]);
-    
-        // Update or create the supplier's profile
-        SProfile::updateOrCreate(
-            ['supplier_id' => $supplier->id],
-            [
-                'vendor_name' => $request->vendor_name, 
-                'contact_person' => $request->contact_person,
-                'contact_email' => $request->contact_email,
-                'contact_phone' => $request->contact_phone,
-                'business_address' => $request->business_address,
-                'bio' => $request->bio,
-            ]
-        );
-    
+
         return redirect()->route('vendor.profile')->with('success', 'Vendor profile updated successfully.');
+
     }
-    
+
 
     //-------------------------------------------------------------------------------------------------------------------//
     # Vehicle Management
     //-------------------------------------------------------------------------------------------------------------------//
+    // Controller method
+    public function showCalendar()
+    {
+        $reservations = SVehicleReservation::with('user')->select('reservation_date', 'user_id')->get(); // Fetch necessary fields with user data
+        return view('roles/supplier.vehicle.request', ['reservations' => $reservations]);
+    }
+
     public function requestReservation()
     {
-        return view('roles/supplier.vehicle.request');
+        $user = Auth::user();
+        $supplier = Supplier::where('user_id', $user->id)->first();
+        $reservations = SVehicleReservation::where('supplier_id', $supplier->id)->get();
+        return view('roles/supplier.vehicle.request', compact('supplier', 'reservations'));
     }
 
     public function storeReservation(Request $request)
@@ -259,21 +308,21 @@ class SupplierController extends Controller
             'reservation_date' => 'required|date',
         ]);
 
-        $reservation = SVehicleReservation::create([
+        SVehicleReservation::create([
+            'supplier_id' => Auth::user()->id,
             'vehicle_name' => $request->vehicle_name,
             'purpose' => $request->purpose,
             'reservation_date' => $request->reservation_date,
             'status' => 'Pending',
         ]);
 
-        return response()->json($reservation);
+        return back()->with('success', 'Reservation created successfully.');
     }
 
     public function editViewReservation($id)
     {
-        $reservation = SVehicleReservation::findOrFail($id);
-
-        return view('reservations.edit', compact('reservation'));
+        $reservations = SVehicleReservation::findOrFail($id);
+        return view('roles/supplier.vehicle.editReservation', compact('reservations'));
     }
 
     public function updateReservation(Request $request, $id)
@@ -282,7 +331,6 @@ class SupplierController extends Controller
             'vehicle_name' => 'required|string|max:255',
             'purpose' => 'required|string',
             'reservation_date' => 'required|date',
-            'status' => 'required|string',
         ]);
 
         $reservation = SVehicleReservation::findOrFail($id);
@@ -291,10 +339,9 @@ class SupplierController extends Controller
             'vehicle_name' => $request->vehicle_name,
             'purpose' => $request->purpose,
             'reservation_date' => $request->reservation_date,
-            'status' => $request->status,
         ]);
 
-        return redirect()->route('view-reservations')->with('success', 'Reservation updated successfully.');
+        return redirect()->route('view-status')->with('success', 'Reservation updated successfully.');
     }
 
     public function deleteReservation($id)
@@ -308,11 +355,11 @@ class SupplierController extends Controller
 
     public function viewStatus()
     {
-        return view('roles/supplier.vehicle.status');
+        $user = Auth::user();
+        $supplier = Supplier::where('user_id', $user->id)->first();
+        $reservations = SVehicleReservation::where('supplier_id', $supplier->id)->get();
+        return view('roles/supplier.vehicle.status' , compact('supplier', 'reservations'));
     }
 
-    public function viewLogs()
-    {
-        return view('roles/supplier.vehicle.view_logs');
-    }
+    
 }

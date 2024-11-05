@@ -3,7 +3,7 @@
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse">
-                <x-breadcrumb href="/" :active="false" :isLast="false">
+                <x-breadcrumb href="/supplier/dashboard" :active="false" :isLast="false">
                     <div class="sb-nav-link-icon tw-pr-2"><i class="fa-solid fa-table-columns"></i></div>
                     Dashboard
                 </x-breadcrumb>
@@ -86,6 +86,7 @@
                 <div class="tw-mb-6">
                     <button type="submit" class="tw-w-full tw-bg-indigo-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-shadow-md hover:tw-bg-indigo-700">Submit Registration</button>
                 </div>
+                <hr>
             </form>
 
             <!-- Registration Review and Approval Section -->

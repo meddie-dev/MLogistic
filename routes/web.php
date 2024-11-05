@@ -97,18 +97,19 @@ Route::middleware(['auth', 'role:supplier'])->group(function () {
     Route::delete('/supplier/vendor/delete/{supplier}', [SupplierController::class, 'deleteRegistration'])->name('delete.registration');
 
     Route::get('/supplier/vendor/profile', [SupplierController::class, 'vendorProfile'])->name('vendor.profile');
-    Route::get('/supplier/vendor/profile/edit/{id}', [SupplierController::class, 'editProfile'])->name('profile.edit');
-    Route::post('/supplier/vendor/profile/{supplier}', [SupplierController::class, 'updateProfile'])->name('update.profile');
+    Route::get('/supplier/vendor/profile/create/{supplier}', [SupplierController::class, 'createProfile'])->name('profile.create');
+    Route::post('/supplier/vendor/profile/store/{supplier}', [SupplierController::class, 'storeProfile'])->name('profile.store');
+    Route::get('/supplier/vendor/profile/edit/{supplier}', [SupplierController::class, 'editProfile']) ->name('profile.edit');
+    Route::patch('/supplier/vendor/profile/update/{supplier}', [SupplierController::class, 'updateProfile'])->name('profile.update');
 
     // Routes for Vehicle Reservation Module
     Route::get('/supplier/vehicle/request', [SupplierController::class, 'requestReservation']);
-    Route::post('/supplier/vehicle/request', [SupplierController::class, 'storeReservation'])->name('request-reservation');
-    Route::get('/supplier/vehicle/edit/{reservation}', [SupplierController::class, 'editViewReservation'])->name('edit-reservation');
-    Route::patch('/supplier/vehicle/edit/{reservation}', [SupplierController::class, 'updateReservation'])->name('update-reservation');
-    Route::delete('/supplier/vehicle/delete/{reservation}', [SupplierController::class, 'deleteReservation'])->name('delete-reservation');
+    Route::post('/supplier/vehicle/request/{supplier}', [SupplierController::class, 'storeReservation'])->name('store-reservation');
+    Route::get('/supplier/vehicle/edit/{supplier}', [SupplierController::class, 'editViewReservation'])->name('edit-reservation');
+    Route::patch('/supplier/vehicle/edit/{supplier}', [SupplierController::class, 'updateReservation'])->name('update-reservation');
+    Route::delete('/supplier/vehicle/delete/{supplier}', [SupplierController::class, 'deleteReservation'])->name('delete-reservation');
 
-    Route::get('/supplier/vehicle/status', [SupplierController::class, 'viewStatus']);
-    Route::get('/supplier/vehicle/view_logs', [SupplierController::class, 'viewLogs']);
+    Route::get('/supplier/vehicle/status', [SupplierController::class, 'viewStatus'])->name('view-status'); ;
 });
 
 /*--------------------------------------------------------------

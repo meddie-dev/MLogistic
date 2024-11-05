@@ -1,4 +1,4 @@
-<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+<nav class="sb-sidenav accordion @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'constructor') sb-sidenav-light bg-light shadow @else sb-sidenav-dark @endif" id="sidenavAccordion">
     <div class="sb-sidenav-menu">
         <h6 class="tw-ml-4 tw-mb-4 tw-text-gray-500">Logistics 2</h6>
         <div class="nav">
@@ -132,7 +132,6 @@
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link" href="/supplier/vehicle/request">Request Reservations</a>
                     <a class="nav-link" href="/supplier/vehicle/status">View Status</a>
-                    <a class="nav-link" href="/supplier/vehicle/view_logs">View Logs</a>
                 </nav>
             </div>
             @endif

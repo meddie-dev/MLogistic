@@ -1,5 +1,5 @@
-<footer class="py-4 bg-light mt-auto">
-    <div class="container-fluid px-4">
+<footer class="py-4 bg-light mt-auto tw-w-full">
+    <div class="container-fluid px-4 ">
         <div class="d-flex align-items-center justify-content-between small">
             <div class="text-muted">Copyright &copy; Logistics II 2024</div>
             <div>

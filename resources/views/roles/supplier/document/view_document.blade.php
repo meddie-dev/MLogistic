@@ -13,7 +13,7 @@
                 </x-breadcrumb>
 
                 <x-breadcrumb :active="true" :isLast="true">
-                    Contract view
+                    View Documents
                 </x-breadcrumb>
             </ol>
         </nav>
@@ -22,7 +22,7 @@
             <h2 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-text-center tw-mb-6">Uploaded Document</h2>
 
             <!-- Documents List and Search Input -->
-            <div class="tw-flex tw-items-center tw-justify-between tw-mb-16 tw-mt-4 tw-space-x-2">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mt-14 tw-mb-6 tw-space-x-2">
                 <div class="tw-relative tw-w-full tw-max-w-xs"><input type="text" id="search-documents" class="tw-w-full tw-px-4 tw-py-2 tw-pl-10 tw-border tw-border-gray-300 tw-rounded-md tw-shadow-sm tw-focus:ring-indigo-500 tw-focus:border-indigo-500 tw-sm-text-sm" placeholder="Search documents...">
                     <div class="tw-absolute tw-inset-y-0 tw-left-0 tw-flex tw-items-center tw-pl-3"><i class="fa-solid fa-search tw-text-gray-500"></i></div>
                 </div>
@@ -37,7 +37,7 @@
                 <h3 class="tw-text-lg tw-font-medium tw-text-gray-700">Total Documents: {{ $supplier->documents->count() }}</h3>
             </div>
 
-            <div class="tw-flex tw-flex-col tw-space-y-4" data-aos="fade-up" id="document-list">
+            <div class="tw-flex tw-flex-col tw-space-y-4 tw-my-4" data-aos="fade-up" id="document-list">
                 @foreach ($supplier->documents->sortBy('document_type') as $document)
 
                 <div class="tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-4 tw-flex tw-flex-col tw-space-y-4 document-item">
@@ -51,8 +51,19 @@
                     <p class="tw-text-sm tw-text-gray-600">Uploaded on: {{ $document->created_at->format('M d, Y') }}</p>
                 </div>
                 @endforeach
+                <hr>
+            </div>
+            <div>
+                <div class="tw-mt-10" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
+                    <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-4 ">Uploaded Documents</h3>
+                    <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
+                        <p>These are the documents you have uploaded for the vendor registration process.</p>
+                        <p>Click on the "View File" button to view the document.</p>
+                    </div>
+                </div>
             </div>
         </div>
+
     </div>
 
     <script>

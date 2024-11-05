@@ -97,3 +97,103 @@ window.addEventListener('load', function(e) {
     }
   }
 });
+
+// Calendar
+import { Calendar } from '@fullcalendar/core';
+import interactionPlugin from '@fullcalendar/interaction';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid'
+
+
+let calendarEl = document.getElementById('calendar');
+let selectedDate = null;
+
+
+
+let calendar = new Calendar(calendarEl, {
+  plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin],
+  initialView: 'dayGridMonth',
+  selectable: true,
+  headerToolbar: {
+    start: 'title', // will normally be on the left. if RTL, will be on the right
+    center: '',
+    end: 'dayGridMonth,timeGridDay prev,next' // will normally be on the right. if RTL, will be on the left
+  },
+  businessHours: [ // specify an array instead
+    {
+      daysOfWeek: [ 1, 2, 3 ], // Monday, Tuesday, Wednesday
+      startTime: '08:00', // 8am
+      endTime: '18:00' // 6pm
+    },
+    {
+      daysOfWeek: [ 4, 5 ], // Thursday, Friday
+      startTime: '10:00', // 10am
+      endTime: '16:00' // 4pm
+    }
+  ],
+ 
+
+
+  select: function(info) {
+    const reservationDateInput = document.querySelector('#reservation_date');
+
+    if (selectedDate === info.startStr) {
+      selectedDate = null;
+      reservationDateInput.value = '';
+      calendar.getEvents().forEach(event => event.remove());
+      loadExistingReservations();
+    } else {
+      selectedDate = info.startStr;
+      reservationDateInput.value = selectedDate;
+      calendar.getEvents().forEach(event => event.remove());
+      loadExistingReservations();
+      const user_id = window.user_id; 
+      calendar.addEvent({
+        start: selectedDate,
+        allDay: true,
+        display: 'background',
+      
+        backgroundColor: existingReservations.find(reservation => reservation.user_id === user_id) ? '#ffeb3b' : '#2196f3'
+      });
+    }
+  },
+});
+
+function loadExistingReservations() {
+  existingReservations.forEach(reservation => {
+    const eventTitle = `${reservation.vehicle_name} - ${reservation.purpose}`;
+
+    // Determine color based on reservation status
+    let backgroundColor;
+    switch (reservation.status) {
+      case 'Approved':
+        backgroundColor = 'rgba(0, 128, 0, 0.5)'; // Green for approved
+        break;
+      case 'Pending':
+        backgroundColor = 'rgba(255, 223, 0, 0.5)'; // Yellow for pending
+        break;
+      case 'Canceled':
+        backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Red for canceled
+        break;
+      default:
+        backgroundColor = '#2196f3'; // Default color for unknown statuses
+    }
+
+    // Add each reservation as a separate event with dynamic color
+    calendar.addEvent({
+      start: reservation.reservation_date,
+      title: eventTitle, // Individual title for each reservation
+      backgroundColor: backgroundColor,
+      borderColor: backgroundColor.replace('0.5', '1'), // Border color to match background with full opacity
+      extendedProps: {
+        description: eventTitle // Add description for hover effect
+      }
+    });
+  });
+}
+
+
+loadExistingReservations();
+calendar.render();
+
+

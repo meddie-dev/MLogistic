@@ -34,17 +34,17 @@
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
     <!-- Client Logo -->
-      <!-- <div class="col d-flex align-items-center">
+      <div class="col d-flex align-items-center">
         <a href="/" class="logo me-auto">
           <img src="/css/logo.png" alt="Logo" class="img-fluid" style="max-width: 150px;">
         </a>
-      </div> -->
+      </div>
 
-      <div class="col d-flex align-content-center ">
+      <!-- <div class="col d-flex align-content-center ">
         <a href="/" class="mt-2">
           <h3>Logistics II</h3>
         </a>
-      </div>
+      </div> -->
 
 
       <nav id="navmenu" class="navmenu" style="display: none;">

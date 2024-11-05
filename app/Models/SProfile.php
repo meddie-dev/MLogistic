@@ -8,14 +8,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class SProfile extends Model
 {
     use HasFactory;
+
     protected $table = 'profiles';
+
     protected $fillable = [
         'supplier_id',
+        'vendor_name',
         'contact_person',
         'contact_email',
         'contact_phone',
         'business_address',
-        'bio'
+        'bio',
     ];
 
     public function supplier()

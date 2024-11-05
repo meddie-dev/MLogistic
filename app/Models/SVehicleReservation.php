@@ -9,7 +9,7 @@ class SVehicleReservation extends Model
 { use HasFactory;
 
     protected $table = 'vehicle_reservations';
-    protected $fillable = ['supplier_id', 'vehicle_name', 'purpose', 'reservation_date'];
+    protected $fillable = ['supplier_id', 'vehicle_name', 'purpose', 'reservation_date' , 'status'];
 
     public function supplier()
     {

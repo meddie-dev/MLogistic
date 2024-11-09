@@ -1,6 +1,6 @@
 <x-layout>
 
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4  tw-my-10">
 
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
@@ -16,7 +16,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-7xl tw-mx-auto tw-py-6 sm:tw-px-6 lg:tw-px-8 tw-space-y-6">
+        <div class="tw-max-w-7xl tw-mx-auto tw-py-6 tw-space-y-6">
 
             <!-- Profile Header -->
             <div class="tw-bg-white tw-shadow sm:tw-rounded-lg tw-p-6">

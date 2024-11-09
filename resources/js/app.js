@@ -107,34 +107,35 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 
 let calendarEl = document.getElementById('calendar');
 let selectedDate = null;
-
-
-
 let calendar = new Calendar(calendarEl, {
   plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin],
   initialView: 'dayGridMonth',
   selectable: true,
   headerToolbar: {
-    start: 'title', // will normally be on the left. if RTL, will be on the right
+    start: 'title', 
     center: '',
-    end: 'dayGridMonth,timeGridDay prev,next' // will normally be on the right. if RTL, will be on the left
+    end: 'dayGridMonth,timeGridDay prev,next' 
   },
-  businessHours: [ // specify an array instead
+  businessHours: [ 
     {
       daysOfWeek: [ 1, 2, 3 ], // Monday, Tuesday, Wednesday
       startTime: '08:00', // 8am
-      endTime: '18:00' // 6pm
+      endTime: '18:00', // 6pm
     },
     {
       daysOfWeek: [ 4, 5 ], // Thursday, Friday
-      startTime: '10:00', // 10am
-      endTime: '16:00' // 4pm
+      startTime: '08:00', // 8am
+      endTime: '18:00', // 6pm
     }
   ],
  
-
-
   select: function(info) {
+    if ((info.view.type === 'dayGridMonth' && (info.start.getDay() === 0 || info.start.getDay() === 6)) || 
+        (info.view.type === 'timeGridDay' && (info.start.getDay() === 0 || info.start.getDay() === 6 || (info.start.getHours() < 8 || info.start.getHours() >= 18)))) {
+      alert('You can only make reservations on weekdays, from Monday to Friday, between 8:00 AM to 6:00 PM. Please choose another date.');
+      return;
+    }
+
     const reservationDateInput = document.querySelector('#reservation_date');
 
     if (selectedDate === info.startStr) {
@@ -147,12 +148,11 @@ let calendar = new Calendar(calendarEl, {
       reservationDateInput.value = selectedDate;
       calendar.getEvents().forEach(event => event.remove());
       loadExistingReservations();
-      const user_id = window.user_id; 
+      const user_id = window.user_id;
       calendar.addEvent({
         start: selectedDate,
-        allDay: true,
+        allDay: info.view.type === 'dayGridMonth',
         display: 'background',
-      
         backgroundColor: existingReservations.find(reservation => reservation.user_id === user_id) ? '#ffeb3b' : '#2196f3'
       });
     }
@@ -172,7 +172,7 @@ function loadExistingReservations() {
       case 'Pending':
         backgroundColor = 'rgba(255, 223, 0, 0.5)'; // Yellow for pending
         break;
-      case 'Canceled':
+      case 'Cancelled':
         backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Red for canceled
         break;
       default:
@@ -191,7 +191,6 @@ function loadExistingReservations() {
     });
   });
 }
-
 
 loadExistingReservations();
 calendar.render();

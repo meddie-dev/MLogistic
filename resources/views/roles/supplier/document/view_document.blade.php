@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4  tw-my-10">
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse ">
@@ -18,7 +18,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-5xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade">
+        <div class="tw-max-w-7xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade">
             <h2 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-text-center tw-mb-6">Uploaded Document</h2>
 
             <!-- Documents List and Search Input -->
@@ -26,7 +26,7 @@
                 <div class="tw-relative tw-w-full tw-max-w-xs"><input type="text" id="search-documents" class="tw-w-full tw-px-4 tw-py-2 tw-pl-10 tw-border tw-border-gray-300 tw-rounded-md tw-shadow-sm tw-focus:ring-indigo-500 tw-focus:border-indigo-500 tw-sm-text-sm" placeholder="Search documents...">
                     <div class="tw-absolute tw-inset-y-0 tw-left-0 tw-flex tw-items-center tw-pl-3"><i class="fa-solid fa-search tw-text-gray-500"></i></div>
                 </div>
-                <div>
+                <div class="max-md:tw-hidden">
                     <button id="list-view-btn" class="tw-bg-gray-100 tw-p-2 tw-rounded-md tw-text-gray-700 tw-text-sm tw-font-medium tw-mr-2"><i class="fa-solid fa-list tw-mr-2"></i>List View</button>
 
                     <button id="tile-view-btn" class="tw-bg-gray-100 tw-p-2 tw-rounded-md tw-text-gray-700 tw-text-sm tw-font-medium"><i class="fa-solid fa-th tw-mr-2"></i>Tiles View</button>

@@ -2,98 +2,439 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SProfile;
+use App\Models\SRegistration;
+use App\Models\Supplier;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\AuthLog;
+use App\Models\SVehicleReservation;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     public function index()
     {
         $months = [];
-        $userCounts = [];
-        $roles = ['admin', 'supplier', 'constructor'];
-        $roleCounts = [];
+        $userCount = [];
+        $roles = ['admin', 'supplier', 'distributor', 'customer'];
+        $roleCounts = []; // Ensure this is used consistently
 
-        // Get the last 12 months
-        for ($i = 0; $i < 12; $i++) { // Start from 0 to 11 for the last 12 months
-            $month = Carbon::now()->subMonths(11 - $i); // Adjusted to get the correct month
-            $months[] = $month->format('M Y'); // Format ng buwan to 'M Y' for abbreviated month name
+        for ($i = 0; $i < 12; $i++) {
+            $month = Carbon::now()->subMonths(11 - $i);
+            $months[] = $month->format('M Y');
             $userCounts[] = User::whereYear('created_at', $month->year)
                 ->whereMonth('created_at', $month->month)
-                ->count(); // Count of users
+                ->count();
         }
 
-        // Get the number of users for each role
         foreach ($roles as $role) {
-            $count = User::where('role', $role)->count(); // Count of users for each role
-            $roleCounts[] = $count; // Add the count to the roleCounts array
+            $count = User::where('role', $role)->count();
+            $roleCounts[] = $count; // Use $roleCounts, not $roleCount
         }
 
-        // Get all users
         $users = User::all();
 
-        // Return the dashboard view
         return view('roles.admin.dashboard', compact('months', 'userCounts', 'users', 'roles', 'roleCounts'));
     }
 
-
-    // Audit Management
-    public function viewLogs()
+    public function exportActivityLog($user_id)
     {
-        return view('roles/admin.audit.view-logs'); // View Logs
+        // Fetch data related to the given user_id
+        $data = AuthLog::where('user_id', $user_id)->get();
+        
+        // Set filename
+        $manilaTime = new \DateTime('now', new \DateTimeZone('Asia/Manila'));
+        $fileName = "activity_logs_user_{$user_id}_" . $manilaTime->format('(F j Y)') . ".xlsx";
+
+        // Set up Excel
+        return Excel::download(new class($data) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles, \Maatwebsite\Excel\Concerns\WithTitle {
+            private $data;
+
+            public function __construct($data)
+            {
+                $this->data = $data;
+            }
+
+            public function collection()
+            {
+                // Format collection rows
+                return $this->data->map(function ($row) {
+                    return [
+                        $row->id,
+                        $row->user_id,
+                        ucfirst($row->event),
+                        $row->ip_address,
+                        $row->created_at->format('Y-m-d H:i:s'),
+                    ];
+                });
+            }
+
+            public function headings(): array
+            {
+                return [
+                    'ID',
+                    'User ID',
+                    'Event',
+                    'IP Address',
+                    'Created At'
+                ];
+            }
+
+            public function styles(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet)
+            {
+                // Title Row
+                $sheet->mergeCells('A1:E1');
+                $sheet->setCellValue('A1', 'Activity Logs Report for User : ' . '(' . $this->data->first()->user->first_name . ' ' . $this->data->first()->user->last_name . ')');
+                $sheet->setCellValue('A2', 'ID');
+                $sheet->setCellValue('B2', 'User ID');
+                $sheet->setCellValue('C2', 'Event');
+                $sheet->setCellValue('D2', 'IP Address');
+                $sheet->setCellValue('E2', 'Created At');
+
+                $sheet->getStyle('A1')->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                        'size' => 14,
+                        'color' => ['argb' => Color::COLOR_WHITE],
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF4F81BD'],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+
+                // Header Row
+                $sheet->getStyle('A2:E2')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF1F4E79'],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                ]);
+
+                // Column widths
+                $sheet->getColumnDimension('A')->setWidth(10);
+                $sheet->getColumnDimension('B')->setWidth(15);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(25);
+
+                // Borders for all data
+                $sheet->getStyle('A2:E' . (2 + $this->data->count()))->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['argb' => Color::COLOR_BLACK],
+                        ],
+                    ],
+                ]);
+
+                return $sheet;
+            }
+
+            public function title(): string
+            {
+                return 'Activity Logs Report - ' . now()->format('F j, Y');
+            }
+        }, $fileName, ExcelFormat::XLSX);
     }
 
-    public function generateReports()
+    public function exportReservation($user_id)
     {
-        return view('roles/admin.audit.generate-reports'); // Generate Reports
+        // Fetch data related to the given user_id
+        $data = SVehicleReservation::where('supplier_id', $user_id)->get();
+        $suppliers = Supplier::all();
+        
+        // Set filename
+        $manilaTime = new \DateTime('now', new \DateTimeZone('Asia/Manila'));
+        $fileName = "reservation_user_{$user_id}_" . $manilaTime->format('(F j Y)') . ".xlsx";;
+
+        // Set up Excel
+        return Excel::download(new class($data, $suppliers)  implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles, \Maatwebsite\Excel\Concerns\WithTitle {
+            private $data;
+            private $suppliers;
+
+            public function __construct($data, $suppliers)
+            {
+                $this->data = $data;
+                $this->suppliers = $suppliers;
+            }
+
+            public function collection()
+            {
+                // Format collection rows
+                return $this->data->map(function ($row) {
+                    return [
+                        $row->id,
+                        $row->supplier_id,
+                        $row->vehicle_name,
+                        $row->purpose,
+                        (new \DateTime($row->reservation_date))->format('F j, Y'). ' | ' . $row->created_at->format('g:iA'),
+                        $row->status,
+                        $row->created_at->format('F j, Y') . ' | ' . $row->created_at->format('g:iA'),
+                        $row->updated_at->format('F j, Y') . ' | ' . $row->updated_at->format('g:iA'),
+                    ];
+                });
+            }
+
+            public function headings(): array
+            {
+                return [
+                    'ID',
+                    'Supplier ID',
+                    'Vehicle Name',
+                    'Purpose',
+                    'Reservation Date',
+                    'Status',
+                    'Created At',
+                    'Updated At'
+                ];
+            }
+
+            public function styles(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet)
+            {
+                // Title Row
+                $sheet->mergeCells('A1:H1');
+                $sheet->setCellValue('A1', 'Reservation Logs Report for User : ' . '(' . $this->suppliers->first()->user->first_name . ' ' . $this->suppliers->first()->user->last_name . ')');
+                $sheet->setCellValue('A2', 'ID');
+                $sheet->setCellValue('B2', 'Supplier ID');
+                $sheet->setCellValue('C2', 'Vehicle Name');
+                $sheet->setCellValue('D2', 'Purpose');
+                $sheet->setCellValue('E2', 'Reservation Date');
+                $sheet->setCellValue('F2', 'Status');
+                $sheet->setCellValue('G2', 'Created At');
+                $sheet->setCellValue('H2', 'Updated At');
+
+                $sheet->getStyle('A1')->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                        'size' => 14,
+                        'color' => ['argb' => Color::COLOR_WHITE],
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF4F81BD'],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+
+                // Header Row
+                $sheet->getStyle('A2:H2')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF1F4E79'],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                ]);
+
+                // Column widths
+                $sheet->getColumnDimension('A')->setWidth(10);
+                $sheet->getColumnDimension('B')->setWidth(15);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(25);
+                $sheet->getColumnDimension('F')->setWidth(25);
+                $sheet->getColumnDimension('G')->setWidth(25);
+                $sheet->getColumnDimension('H')->setWidth(25);
+
+                // Borders for all data
+                $sheet->getStyle('A2:H' . (2 + $this->data->count()))->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['argb' => Color::COLOR_BLACK],
+                        ],
+                    ],
+                ]);
+
+                return $sheet;
+            }
+
+            public function title(): string
+            {
+                return 'Reservation Logs Report - ' . now()->format('F j, Y');
+            }
+        }, $fileName, ExcelFormat::XLSX);
+
     }
 
-    public function manageUsers()
+    /*--------------------------------------------------------------
+     # Vendor Management
+     --------------------------------------------------------------*/
+
+    public function vendorApproval()
     {
-        return view('roles/admin.audit.manage-users'); // Manage Users
+        $registrations = SRegistration::all();
+        return view('roles/admin.vendor.approval', compact('registrations'));
     }
 
-    // Vehicle Reservation
-    public function manageReservations()
+    public function viewApproval($id)
     {
-        return view('roles/admin.vehicle.manage-reservations'); // Manage Reservations
+        $profile = SProfile::where('supplier_id', $id)->first();
+        $registrations = SRegistration::findOrFail($id);
+        return view('roles/admin.vendor.view_approval', compact('registrations', 'profile'));
     }
 
-    public function viewHistory()
+    public function updateApproval($id)
     {
-        return view('roles/admin.vehicle.view-history'); // View History
+        $registrations = SRegistration::findOrFail($id);
+        $registrations->status = 'Approved';
+        $registrations->save();
+        return redirect()->route('admin-vendor-approval')->with('success', 'Vendor registration approved successfully.');
+    }
+    public function cancelApproval($id)
+    {
+        $registrations = SRegistration::findOrFail($id);
+        $registrations->status = 'Cancelled';
+        $registrations->save();
+        return redirect()->route('admin-vendor-approval')->with('success', 'Vendor registration cancelled successfully.');
     }
 
-    // Document Management
-    public function uploadDocuments()
+    public function orderReview()
     {
-        return view('roles/admin.document.upload'); // Upload Documents
+        return view('roles/admin/vendor.order-review'); // Review purchase orders
     }
 
-    public function archiveDocuments()
+    public function vendorProfiles()
     {
-        return view('roles/admin.document.archive'); // Archive Documents
+        $supplier = Supplier::with('profiles')->get();
+        return view('roles.admin.vendor.profiles', compact('supplier'));
     }
 
-    // Vendor Management
-    public function manageVendors()
+    public function viewProfiles($id)
     {
-        return view('roles/admin.vendor.manage'); // Add/Edit Vendors
+        $supplier = Supplier::where('user_id', $id)->first();
+        $profile = SProfile::where('supplier_id', $id)->first();
+        
+        return view('roles.admin.vendor.view_profiles', compact('profile', 'supplier'));
     }
 
-    public function trackPerformance()
+
+    /*--------------------------------------------------------------
+     # Audit Management
+     --------------------------------------------------------------*/
+
+    public function auditTrails()
     {
-        return view('roles/admin.vendor.track-performance'); // Track Vendor Performance
+        $suppliers = Supplier::all();
+        return view('roles.admin.audit.trails', compact('suppliers'));
     }
 
-    // Fleet Management
-    public function manageInventory()
+    public function viewTrails($id)
     {
-        return view('roles/admin.fleet.inventory'); // Manage Inventory
+        $supplier = Supplier::where('user_id', $id)->first();
+        $authlogs = AuthLog::where('user_id', $id)->get();
+        $uniqueIps = $authlogs->pluck('ip_address')->unique();
+    
+        return view('roles.admin.audit.view-trails', compact('supplier', 'authlogs', 'uniqueIps'));
+    }
+    
+
+    public function auditReporting()
+    {
+        $suppliers = Supplier::with('profiles')->get();
+        return view('roles/admin.audit.reporting', compact('suppliers'));
     }
 
-    public function maintenanceSchedules()
+    public function viewReporting($id)
     {
-        return view('roles/admin.fleet.maintenance'); // Maintenance Schedules
+        $suppliers = Supplier::where('user_id', $id)->first();
+        $profiles = SProfile::all();
+        return view('roles/admin.audit.view-reporting', compact('suppliers', 'profiles'));
+    }
+
+
+    /*--------------------------------------------------------------
+     # Fleet Management
+     --------------------------------------------------------------*/
+
+    public function vehicleInventory()
+    {
+        return view('roles/admin.fleet.inventory'); // View and manage fleet availability
+    }
+
+    public function maintenanceManagement()
+    {
+        return view('roles/admin.fleet.maintenance'); // Schedule maintenance and approve repairs
+    }
+
+    /*--------------------------------------------------------------
+     # Vehicle Reservation
+     --------------------------------------------------------------*/
+
+    public function reservationScheduling()
+    {
+
+        $supplier = Supplier::with('vehicleReservations')->get();
+
+        return view('roles.admin.vehicle.scheduling', compact('supplier'));
+    }
+
+    public function viewScheduling($id)
+    {
+
+        $supplier = Supplier::with('profiles', 'vehicleReservations')->where('user_id', $id)->firstOrFail();
+
+        return view('roles.admin.vehicle.view-scheduling', compact('supplier'));
+    }
+     
+    public function approveScheduling($id)
+    {
+       $reservation = SVehicleReservation::findOrFail($id);
+       $reservation->status = 'Approved';
+       $reservation->save();
+        return redirect()->route('view-scheduling', ['id' => $reservation->supplier_id])->with('success', 'Scheduling approved successfully.');
+    }
+    public function cancelScheduling($id)
+    {
+       $reservation = SVehicleReservation::findOrFail($id);
+       $reservation->status = 'Cancelled';
+       $reservation->save();
+        return redirect()->route('view-scheduling', ['id' => $reservation->supplier_id])->with('success', 'Scheduling cancelled successfully.');
+    }
+     
+
+    public function reservationHistory()
+    {
+        return view('roles/admin.vehicle.history'); 
+    }
+
+    /*--------------------------------------------------------------
+     # Document Tracking
+     --------------------------------------------------------------*/
+
+    public function documentStorage()
+    {
+        return view('roles/admin.document.storage'); // Organize logistics-related documents
+    }
+
+    public function documentTracking()
+    {
+        return view('roles/admin.document.tracking'); // Quickly access documents
+    }
+
+    public function documentSecurity()
+    {
+        return view('roles/admin.document.security'); // Set access permissions and monitor security
     }
 }

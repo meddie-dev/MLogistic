@@ -34,8 +34,9 @@
             </a>
             <div class="collapse" id="collapseVendor" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="/admin/vendor/manage">Add/Edit Vendors</a>
-                    <a class="nav-link" href="/admin/vendor/performance">Track Performance</a>
+                    <a class="nav-link" href="/admin/vendor/approval">Vendor Approval</a>
+                    <a class="nav-link" href="/admin/vendor/order-review">Order Review</a>
+                    <a class="nav-link" href="/admin/vendor/profiles">Vendor Profiles</a>
                 </nav>
             </div>
 
@@ -47,9 +48,8 @@
             </a>
             <div class="collapse" id="collapseAudit" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="/admin/audit/view-logs">View Logs</a>
-                    <a class="nav-link" href="/admin/audit/generate-reports">Generate Reports</a>
-                    <a class="nav-link" href="/admin/audit/manage-users">Manage Users</a>
+                    <a class="nav-link" href="/admin/audit/reporting">Reporting</a>
+                    <a class="nav-link" href="/admin/audit/trails">Trails and Logs </a>
                 </nav>
             </div>
 
@@ -61,8 +61,8 @@
             </a>
             <div class="collapse" id="collapseVehicle" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="/admin/vehicle/manage">Manage Reservations</a>
-                    <a class="nav-link" href="/admin/vehicle/history">View History</a>
+                    <a class="nav-link" href="/admin/vehicle/scheduling">Reservation Scheduling</a>
+                    <a class="nav-link" href="/admin/vehicle/history">Reservation History and Logs</a>
                 </nav>
             </div>
 
@@ -74,8 +74,8 @@
             </a>
             <div class="collapse" id="collapseDocument" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="/admin/document/upload">Upload Documents</a>
-                    <a class="nav-link" href="/admin/document/archive">Archive Documents</a>
+                    <a class="nav-link" href="/admin/document/storage">Document Storage </a>
+                    <a class="nav-link" href="/admin/document/tracking">Tracking and Retrieval</a>
                 </nav>
             </div>
 
@@ -87,8 +87,8 @@
             </a>
             <div class="collapse" id="collapseFleet" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="/admin/fleet/inventory">Manage Inventory</a>
-                    <a class="nav-link" href="/admin/fleet/maintenance">Maintenance Schedules</a>
+                    <a class="nav-link" href="/admin/fleet/inventory">Vehicle Inventory</a>
+                    <a class="nav-link" href="/admin/fleet/maintenance">Maintenance Management</a>
                 </nav>
             </div>
             @endif
@@ -130,8 +130,9 @@
             </a>
             <div class="collapse" id="collapseVehicle" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="/supplier/vehicle/request">Request Reservations</a>
-                    <a class="nav-link" href="/supplier/vehicle/status">View Status</a>
+                    <a class="nav-link" href="/supplier/vehicle/request">Reservations Request</a>
+                    <a class="nav-link" href="/supplier/vehicle/status">Reservation Status</a>
+                    <a class="nav-link" href="/supplier/vehicle/history">Reservation History</a>
                 </nav>
             </div>
             @endif
@@ -179,11 +180,11 @@
             <div class="sb-sidenav-menu-heading">Addons</div>
             <a class="nav-link" href="#">
                 <div class="sb-nav-link-icon"><i class="fa-regular fa-building"></i></i></div>
-                <!-- DS Global Holdings Inc. --> Client Website
+                <!-- DS Global Holdings Inc. --> ( Client Website )
             </a>
-            <a class="nav-link" href="tables.html">
-                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                Tables
+            <a class="nav-link" href="/settings">
+                <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                Profile
             </a>
             <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>

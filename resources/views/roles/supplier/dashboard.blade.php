@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="container tw-my-10">
+    <div class="container-fluid tw-my-10 px-4">
 
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse">
@@ -10,7 +10,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-6xl tw-mx-auto tw-my-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade">
+        <div class="tw-max-w-7xl tw-mx-auto tw-my-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade">
             <div>
                 <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-4">Hi, {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}!</h3>
 
@@ -27,7 +27,7 @@
                         <b>Reservation Calendar:</b> Vehicle Reservations
                     </div>
                     <div class="card-body">
-                        <div id="calendar" ></div>
+                        <div id="dashboardCalendar" ></div>
                     </div>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                         <canvas id="reservationStatusChart" width="300" height="200"></canvas>
                         <script>
                             // Define status labels and counts passed from the controller
-                            const statuses = ['Pending', 'Approved', 'Unapproved'];
+                            const statuses = ['Pending', 'Approved', 'Cancelled'];
                             const statusCounts = @json($statusCounts); // Counts of reservations for each status
                             const ctx = document.getElementById('reservationStatusChart').getContext('2d');
 
@@ -104,7 +104,7 @@
                         <tr>
                             <td>{{ $document->document_type }}</td>
                             <td>{{ $document->created_at->format('M d, Y') }}</td>
-                            <td>{{ $document->created_at->format('h:i A') }}</td>
+                            <td>{{ $document->created_at->setTimezone('Asia/Manila')->format('h:i A') }}</td>
                             <td><a href="{{ asset('storage/' . $document->file_path) }}" target="_blank" class="tw-text-indigo-600 tw-text-sm tw-font-medium tw-underline">View File</a>
                             </td>
                         </tr>
@@ -120,8 +120,13 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+    var calendarEl = document.getElementById('dashboardCalendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+            left: 'prev',
+            center: 'title',
+            right: 'next'
+        },
         contentHeight: 145,
         initialView: 'listWeek',
         events: [

@@ -62,7 +62,11 @@
             </div>
 
             <!-- Scroll Top -->
-            <a href="#" id="scroll-top" class="scroll-top tw-flex tw-items-center tw-justify-center"><i class="fas fa-arrow-up tw-text-white"></i></a>
+            <a href="#" id="scroll-top" class="scroll-top tw-flex tw-items-center tw-justify-center
+            @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'distributor' || auth()->user()->role === 'customer')
+                tw-bg-indigo-600
+            @endif
+            "><i class="fas fa-arrow-up tw-text-white"></i></a>
 
             <!-- Preloader -->
             <div id="preloader"></div>

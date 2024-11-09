@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4  tw-my-10">
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse">
@@ -18,7 +18,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-5xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade">
+        <div class="tw-max-w-7xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade">
             <div class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-text-center tw-mb-6">
                 Vehicle Reservations Status
             </div>
@@ -32,7 +32,7 @@
                                 <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-file-pen tw-mr-2"></i>Purpose</th>
                                 <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-calendar tw-mr-2"></i>Scheduled Date</th>
                                 <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-circle-info tw-mr-2"></i>Status</th>
-                                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-wrench tw-mr-2"></i>Action</th>
+                                <th class="tw-px-4 tw-py-2 "><i class="fa-solid fa-wrench tw-mr-2 "></i>Action</th>
                             </tr>
                         </thead>
                         <tbody id="reservationRecords" class="tw-bg-white">
@@ -45,13 +45,15 @@
                                 <td class="tw-px-4 tw-py-2 ">
                                     @if ($reservation->status === 'Approved')
                                     <span class="tw-inline-block tw-bg-green-500 tw-rounded-full tw-px-3 tw-py-1 tw-text-white tw-text-sm">{{ $reservation->status }}</span>
+                                    @elseif ($reservation->status === 'Pending')
+                                    <span class="tw-inline-block tw-bg-yellow-500 tw-rounded-full tw-px-3 tw-py-1 tw-text-white tw-text-sm">{{ $reservation->status  }}</span>
                                     @else
-                                    <span class="tw-inline-block tw-bg-orange-500 tw-rounded-full tw-px-3 tw-py-1 tw-text-white tw-text-sm">{{ $reservation->status }}</span>
+                                    <span class="tw-inline-block tw-bg-red-500 tw-rounded-full tw-px-3 tw-py-1 tw-text-white tw-text-sm">{{ $reservation->status}}</span>
                                     @endif
                                 </td>
                                 <td class="tw-px-4 tw-py-2">
-                                    @if ($reservation->status === 'Approved')
-                                    <a href="" class="tw-text-green-500 hover:tw-text-green-700">View</a>
+                                    @if ($reservation->status === 'Approved'|| $reservation->status === 'Cancelled')
+                                    <span>Updated at {{ \Carbon\Carbon::parse($reservation->updated_at)->setTimezone('Asia/Manila')->format('F j, Y, g:i a') }}</span>
                                     @else
                                     <a href="{{ route('edit-reservation', $reservation->id) }}" class="tw-text-blue-500 hover:tw-text-blue-700">Edit</a>
                                     <form action="{{ route('delete-reservation', $reservation->id) }}" method="POST" class="tw-inline">

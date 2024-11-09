@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4  tw-my-10">
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse">
@@ -18,7 +18,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-5xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade"> <!-- Additional Information Section -->
+        <div class="tw-max-w-7xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade"> <!-- Additional Information Section -->
             <div>
                 <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700  tw-mb-4">Profile Information</h3>
                 <p class="tw-text-sm tw-text-gray-600">

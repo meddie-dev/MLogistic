@@ -10,24 +10,23 @@ use App\Models\SRegistration;
 use App\Models\SVehicleReservation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\User;
 use Carbon\Carbon;
-
+use App\Models\AuthLog;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SupplierController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
-    
-        
         $user = Auth::user();
         $documents = SDocument::where('supplier_id', $user->id)->get();
         $reservation = SVehicleReservation::where('supplier_id', $user->id)->get();
         // Count reservations by each status
         $statusCounts = [
-            'Pending' => SVehicleReservation::where('status', 'Pending')->count(),
-            'Approved' => SVehicleReservation::where('status', 'Approved')->count(),
-            'Unapproved' => SVehicleReservation::where('status', 'Unapproved')->count(),
+            'Pending' => SVehicleReservation::where('supplier_id', $user->id)->where('status', 'Pending')->count(),
+            'Approved' => SVehicleReservation::where('supplier_id', $user->id)->where('status', 'Approved')->count(),
+            'Cancelled' => SVehicleReservation::where('supplier_id', $user->id)->where('status', 'Cancelled')->count(),
         ];
     
         return view('roles.supplier.dashboard', compact('documents', 'statusCounts', 'reservation'));
@@ -41,6 +40,7 @@ class SupplierController extends Controller
     {
         $user = Auth::user();
         $supplier = Supplier::where('user_id', $user->id)->first();
+        $this->authorize('accessSupplierData', $supplier);
         return view('roles/supplier.document.upload', compact('supplier'));
     }
 
@@ -48,11 +48,18 @@ class SupplierController extends Controller
     {
         $request->validate(['document_type' => 'required', 'file' => 'required|file']);
         $path = $request->file('file')->store('file_path', 'public');
-
+      
+        $this->authorize('accessSupplierData', $supplier);
         SDocument::create([
             'supplier_id' => $supplier->id,
             'document_type' => $request->document_type,
             'file_path' => $path
+        ]);
+
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Created Document',
+            'ip_address' => request()->ip(),
         ]);
 
         return back()->with('success', 'Document uploaded successfully!');
@@ -61,10 +68,18 @@ class SupplierController extends Controller
     public function editDocument($id)
     {
         $document = SDocument::findOrFail($id);
+        $supplier = Supplier::findOrFail($document->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Viewed Document',
+            'ip_address' => request()->ip(),
+        ]);
+
         return view('roles/supplier.document.editDocument', compact('document'));
     }
 
-    public function updateDocument(Request $request, Supplier $supplier, $id)
+    public function updateDocument(Request $request, $id)
     {
         $request->validate([
             'document_type' => 'required|string|max:255',
@@ -72,6 +87,8 @@ class SupplierController extends Controller
         ]);
 
         $document = SDocument::findOrFail($id);
+        $supplier = Supplier::findOrFail($document->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
 
         if ($request->hasFile('file')) {
 
@@ -88,6 +105,12 @@ class SupplierController extends Controller
             'file_path' => $document->file_path
         ]);
 
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Updated Document',
+            'ip_address' => request()->ip(),
+        ]);
+
         return redirect()->route('view-documents')->with('success', 'Document updated successfully!');
     }
 
@@ -95,6 +118,13 @@ class SupplierController extends Controller
     {
         $document = SDocument::findOrFail($document->id);
         $document->delete();
+        $supplier = Supplier::findOrFail($document->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Deleted Document',
+            'ip_address' => request()->ip(),
+        ]);
 
         return redirect()->route('view-documents')->with('success', 'Document deleted successfully.');
     }
@@ -103,6 +133,7 @@ class SupplierController extends Controller
     {
         $user = Auth::user();
         $supplier = Supplier::where('user_id', $user->id)->first();
+        $this->authorize('accessSupplierData', $supplier);
         return view('roles/supplier.document.view_document', compact('supplier')); // Upload Documents view
     }
 
@@ -114,11 +145,13 @@ class SupplierController extends Controller
     {
         $user = Auth::user();
         $supplier = Supplier::where('user_id', $user->id)->first();
+        $this->authorize('accessSupplierData', $supplier);
         return view('roles/supplier.vendor.registration', compact('supplier')); // View Contracts
     }
 
     public function uploadRegistration(Request $request, Supplier $supplier)
     {
+        $this->authorize('accessSupplierData', $supplier);
         $request->validate([
             'company_name' => 'required|string|max:255',
             'company_address' => 'required|string',
@@ -127,6 +160,7 @@ class SupplierController extends Controller
             'key_contacts' => 'required|string',
             'supporting_documents_path' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:10024',
         ]);
+        $this->authorize('accessSupplierData', $supplier);
 
         $filePath = $request->file('supporting_documents_path')->store('supporting_documents', 'public');
 
@@ -137,7 +171,14 @@ class SupplierController extends Controller
             'company_email' => $request->company_email,
             'service_offerings' => $request->service_offerings,
             'key_contacts' => $request->key_contacts,
-            'supporting_documents_path' => $filePath
+            'supporting_documents_path' => $filePath,
+            'status' => 'Pending'
+        ]);
+
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Created Vendor Registration',
+            'ip_address' => request()->ip(),
         ]);
 
         return back()->with('success', 'Vendor registration submitted successfully.');
@@ -146,7 +187,13 @@ class SupplierController extends Controller
     public function editViewRegistration($id)
     {
         $vendor = SRegistration::findOrFail($id);
-
+        $supplier = Supplier::findOrFail($vendor->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Viewed Vendor Registration',
+            'ip_address' => request()->ip(),
+        ]);
         return view('roles.supplier.vendor.editRegistration', compact('vendor'));
     }
 
@@ -160,9 +207,12 @@ class SupplierController extends Controller
             'key_contacts' => 'required|string',
             'supporting_documents_path' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:10024',
         ]);
+        
 
         $vendor = SRegistration::findOrFail($id);
+        $supplier = Supplier::findOrFail($vendor->supplier_id);
 
+        $this->authorize('accessSupplierData', $supplier);
         if ($request->hasFile('supporting_documents_path')) {
 
             if ($vendor->supporting_documents_path) {
@@ -179,6 +229,13 @@ class SupplierController extends Controller
             'company_email' => $request->company_email,
             'service_offerings' => $request->service_offerings,
             'key_contacts' => $request->key_contacts,
+            'status' => 'Pending'
+        ]);
+
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Updated Vendor Registration',
+            'ip_address' => request()->ip(),
         ]);
 
         return redirect()->route('view-vendors')->with('success', 'Vendor registration updated successfully.');
@@ -189,6 +246,14 @@ class SupplierController extends Controller
     {
         $vendor = SRegistration::findOrFail($id);
         $vendor->delete();
+        $supplier = Supplier::findOrFail($vendor->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
+
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Deleted Vendor Registration',
+            'ip_address' => request()->ip(),
+        ]);
 
         return redirect()->route('view-vendors')->with('success', 'Vendor registration deleted successfully.');
     }
@@ -197,6 +262,8 @@ class SupplierController extends Controller
     {
         $user = Auth::user();
         $supplier = Supplier::where('user_id', $user->id)->first();
+        $this->authorize('accessSupplierData', $supplier);
+
         return view('roles/supplier.vendor.view_vendor', compact('supplier')); // View Contracts
     }
 
@@ -205,6 +272,7 @@ class SupplierController extends Controller
         $user = Auth::user();
         $profile = SProfile::where('supplier_id', $user->id)->first();
         $supplier = Supplier::where('user_id', $user->id)->first();
+        $this->authorize('accessSupplierData', $supplier);
         return view('roles/supplier.vendor.profile', compact('profile', 'supplier'));
     }
 
@@ -213,6 +281,7 @@ class SupplierController extends Controller
     {
         $user = Auth::user();
         $supplier = Supplier::where('user_id', $user->id)->first();
+        $this->authorize('accessSupplierData', $supplier);
         return view('roles.supplier.vendor.create_profile' , compact('supplier'));
     }
 
@@ -228,6 +297,8 @@ class SupplierController extends Controller
             'bio' => 'required|string|max:500'
         ]);
 
+        $this->authorize('accessSupplierData', $supplier);
+
         // Create the supplier's profile
         SProfile::create([
             'supplier_id' => $supplier->id,
@@ -239,6 +310,12 @@ class SupplierController extends Controller
             'bio' => $request->bio
         ]);
 
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Created Vendor Profile',
+            'ip_address' => request()->ip(),
+        ]);
+
         return redirect()->route('vendor.profile')->with('success', 'Vendor profile created successfully.');
 
     }
@@ -248,6 +325,7 @@ class SupplierController extends Controller
         $user = Auth::user();
         $supplier = Supplier::where('user_id', $user->id)->first();
         $profile = SProfile::where('supplier_id', $user->id)->first();
+        $this->authorize('accessSupplierData', $supplier);
         return view('roles.supplier.vendor.edit_profile', compact('supplier', 'profile'));
     }
 
@@ -264,7 +342,8 @@ class SupplierController extends Controller
         ]);
 
         $profile = SProfile::findOrFail($id);
-
+        $supplier = Supplier::findOrFail($profile->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
 
         // Update the supplier's profile
         $profile->update([
@@ -277,6 +356,12 @@ class SupplierController extends Controller
             'bio' => $request->bio
         ]);
 
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Updated Vendor Profile',
+            'ip_address' => request()->ip(),
+        ]);
+
         return redirect()->route('vendor.profile')->with('success', 'Vendor profile updated successfully.');
 
     }
@@ -285,7 +370,8 @@ class SupplierController extends Controller
     //-------------------------------------------------------------------------------------------------------------------//
     # Vehicle Management
     //-------------------------------------------------------------------------------------------------------------------//
-    // Controller method
+
+
     public function showCalendar()
     {
         $reservations = SVehicleReservation::with('user')->select('reservation_date', 'user_id')->get(); // Fetch necessary fields with user data
@@ -300,7 +386,7 @@ class SupplierController extends Controller
         return view('roles/supplier.vehicle.request', compact('supplier', 'reservations'));
     }
 
-    public function storeReservation(Request $request)
+    public function storeReservation(Request $request, Supplier $supplier)
     {
         $request->validate([
             'vehicle_name' => 'required|string|max:255',
@@ -308,12 +394,20 @@ class SupplierController extends Controller
             'reservation_date' => 'required|date',
         ]);
 
+        $this->authorize('accessSupplierData', $supplier);
+
         SVehicleReservation::create([
-            'supplier_id' => Auth::user()->id,
+            'supplier_id' => $supplier->id,
             'vehicle_name' => $request->vehicle_name,
             'purpose' => $request->purpose,
             'reservation_date' => $request->reservation_date,
             'status' => 'Pending',
+        ]);
+
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Created Vehicle Reservation',
+            'ip_address' => request()->ip(),
         ]);
 
         return back()->with('success', 'Reservation created successfully.');
@@ -321,7 +415,16 @@ class SupplierController extends Controller
 
     public function editViewReservation($id)
     {
+      
         $reservations = SVehicleReservation::findOrFail($id);
+        $supplier = Supplier::findOrFail($reservations->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Viewed Vehicle Reservation',
+            'ip_address' => request()->ip(),
+        ]);
+        $this->authorize('accessSupplierData', $supplier);
         return view('roles/supplier.vehicle.editReservation', compact('reservations'));
     }
 
@@ -334,11 +437,19 @@ class SupplierController extends Controller
         ]);
 
         $reservation = SVehicleReservation::findOrFail($id);
+        $supplier = Supplier::findOrFail($reservation->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
 
         $reservation->update([
             'vehicle_name' => $request->vehicle_name,
             'purpose' => $request->purpose,
             'reservation_date' => $request->reservation_date,
+        ]);
+
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Updated Vehicle Reservation',
+            'ip_address' => request()->ip(),
         ]);
 
         return redirect()->route('view-status')->with('success', 'Reservation updated successfully.');
@@ -348,8 +459,16 @@ class SupplierController extends Controller
     {
         $reservation = SVehicleReservation::findOrFail($id);
         $reservation->delete();
+        $supplier = Supplier::findOrFail($reservation->supplier_id);
+        $this->authorize('accessSupplierData', $supplier);
 
-        return redirect()->route('view-reservations')->with('success', 'Reservation deleted successfully.');
+        AuthLog::create([
+            'user_id' => Auth::id(),
+            'event' => 'Deleted Vehicle Reservation',
+            'ip_address' => request()->ip(),
+        ]);
+        
+        return redirect()->route('view-status')->with('success', 'Reservation deleted successfully.');
     }
 
 
@@ -358,7 +477,21 @@ class SupplierController extends Controller
         $user = Auth::user();
         $supplier = Supplier::where('user_id', $user->id)->first();
         $reservations = SVehicleReservation::where('supplier_id', $supplier->id)->get();
+        foreach ($reservations as $reservation) {
+            if ($reservation->reservation_date < Carbon::now() && $reservation->status === 'Pending') {
+                $reservation->update(['status' => 'Cancelled']);
+            }
+        }
         return view('roles/supplier.vehicle.status' , compact('supplier', 'reservations'));
+    
+    }
+
+    public function viewHistory()
+    {
+        $user = Auth::user();
+        $supplier = Supplier::where('user_id', $user->id)->first();
+        $reservations = SVehicleReservation::where('supplier_id', $supplier->id)->get();
+        return view('roles/supplier.vehicle.history' , compact('supplier', 'reservations'));
     }
 
     

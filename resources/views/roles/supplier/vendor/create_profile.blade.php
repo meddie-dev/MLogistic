@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4 tw-my-10">
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse">
@@ -18,7 +18,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-4xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6" data-aos="fade">
+        <div class="tw-max-w-7xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6" data-aos="fade">
             <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-text-center">Vendor Profile Management</h2>
 
             <!-- Vendor Profile Form -->

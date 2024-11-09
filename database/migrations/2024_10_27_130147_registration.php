@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('service_offerings');
             $table->text('key_contacts');
             $table->string('supporting_documents_path');
+            $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }

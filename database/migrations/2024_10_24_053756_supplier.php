@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('email');
             $table->string('name');
+            $table->timestamp('last_login_at')->nullable()->after('created_at');
             $table->timestamps();
         });
         
@@ -31,6 +32,6 @@ return new class extends Migration
         Schema::dropIfExists('suppliers');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('users'); // Drop users table last
+        Schema::dropIfExists('users'); 
     }
 };

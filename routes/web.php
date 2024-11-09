@@ -50,26 +50,41 @@ Route::view('/unauthorized', 'unauthorized')->name('unauthorized'); // Unauthori
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index']);
 
-    // Routes for Audit Management Module
-    Route::get('/admin/audit/view-logs', [AdminController::class, 'viewLogs']);
-    Route::get('/admin/audit/generate-reports', [AdminController::class, 'generateReports']);
-    Route::get('/admin/audit/manage-users', [AdminController::class, 'manageUsers']);
+    // Export CSV
+    Route::get('/export-activity/{user_id}', [AdminController::class, 'exportActivityLog'])->name('activity.csv');
+    Route::get('/export-reservation/{user_id}', [AdminController::class, 'exportReservation'])->name('reservation.csv');
 
-    // Routes for Vehicle Reservation Module
-    Route::get('/admin/vehicle/manage', [AdminController::class, 'manageReservations']);
-    Route::get('/admin/vehicle/history', [AdminController::class, 'viewHistory']);
 
-    // Routes for Document Management Module
-    Route::get('/admin/document/upload', [AdminController::class, 'uploadDocuments']);
-    Route::get('/admin/document/archive', [AdminController::class, 'archiveDocuments']);
+    // Vendor Portal
+    Route::get('/admin/vendor/approval', [AdminController::class, 'vendorApproval'])->name('admin-vendor-approval');
+    Route::get('/admin/vendor/view/{id}', [AdminController::class, 'viewApproval'])->name('view-approval');
+    Route::patch('/admin/vendor/update/{id}', [AdminController::class, 'updateApproval'])->name('update-approval');
+    Route::patch('/admin/vendor/cancel/{id}', [AdminController::class, 'cancelApproval'])->name('cancel-approval');
+    Route::get('/admin/vendor/order-review', [AdminController::class, 'orderReview']);
+    Route::get('/admin/vendor/profiles', [AdminController::class, 'vendorProfiles']);
+    Route::get('/admin/vendor/profiles/{id}', [AdminController::class, 'viewProfiles'])->name('view-profiles');
 
-    // Routes for Vendor Management Module
-    Route::get('/admin/vendor/manage', [AdminController::class, 'manageVendors']);
-    Route::get('/admin/vendor/performance', [AdminController::class, 'trackPerformance']);
+    // Audit Management Module
+    Route::get('/admin/audit/trails', [AdminController::class, 'auditTrails']);
+    Route::get('/admin/audit/view-trails/{id}', [AdminController::class, 'viewTrails'])->name('view-trails');
+    Route::get('/admin/audit/reporting', [AdminController::class, 'auditReporting']);
+    Route::get('/admin/audit/reporting/{id}', [AdminController::class, 'viewReporting'])->name('view-reporting');
 
-    // Routes for Fleet Management Module
-    Route::get('/admin/fleet/inventory', [AdminController::class, 'manageInventory']);
-    Route::get('/admin/fleet/maintenance', [AdminController::class, 'maintenanceSchedules']);
+    // Fleet Management Module
+    Route::get('/admin/fleet/inventory', [AdminController::class, 'vehicleInventory']);
+    Route::get('/admin/fleet/maintenance', [AdminController::class, 'maintenanceManagement']);
+
+    // Vehicle Reservation Module
+    Route::get('/admin/vehicle/scheduling', [AdminController::class, 'reservationScheduling']);
+    Route::get('/admin/vehicle/scheduling/{id}', [AdminController::class, 'viewScheduling'])->name('view-scheduling');
+    Route::patch('/admin/vehicle/cancel/{id}', [AdminController::class, 'cancelScheduling'])->name('cancel-scheduling');
+    Route::patch('/admin/vehicle/approve/{id}', [AdminController::class, 'approveScheduling'])->name('approve-scheduling');
+    Route::get('/admin/vehicle/history', [AdminController::class, 'reservationHistory']);
+  
+    // Document Tracking
+    Route::get('/admin/document/storage', [AdminController::class, 'documentStorage']);
+    Route::get('/admin/document/tracking', [AdminController::class, 'documentTracking']);
+   
 });
 
 /*--------------------------------------------------------------
@@ -107,9 +122,10 @@ Route::middleware(['auth', 'role:supplier'])->group(function () {
     Route::post('/supplier/vehicle/request/{supplier}', [SupplierController::class, 'storeReservation'])->name('store-reservation');
     Route::get('/supplier/vehicle/edit/{supplier}', [SupplierController::class, 'editViewReservation'])->name('edit-reservation');
     Route::patch('/supplier/vehicle/edit/{supplier}', [SupplierController::class, 'updateReservation'])->name('update-reservation');
-    Route::delete('/supplier/vehicle/delete/{supplier}', [SupplierController::class, 'deleteReservation'])->name('delete-reservation');
+    Route::delete('/supplier/vehicle/delete/{reservation}', [SupplierController::class, 'deleteReservation'])->name('delete-reservation');
 
-    Route::get('/supplier/vehicle/status', [SupplierController::class, 'viewStatus'])->name('view-status'); ;
+    Route::get('/supplier/vehicle/status', [SupplierController::class, 'viewStatus'])->name('view-status');
+    Route::get('/supplier/vehicle/history', [SupplierController::class, 'viewHistory'])->name('view-history');
 });
 
 /*--------------------------------------------------------------

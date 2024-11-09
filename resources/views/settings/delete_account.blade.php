@@ -1,6 +1,6 @@
 <x-layout>
 
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4 tw-my-10">
 
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">

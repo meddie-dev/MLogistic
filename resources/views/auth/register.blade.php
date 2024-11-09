@@ -81,7 +81,7 @@
                                             <div class="form-floating mb-3">
                                                 <select class="form-select p-3" id="role" name="role" required>
                                                     <option value="" selected>Select Role</option>
-                                                    <option value="customer">Admin</option>
+                                                    <option value="admin">Admin</option>
                                                     <option value="supplier">Supplier</option>
                                                     <option value="constructor">Constructor</option>
                                                 </select>

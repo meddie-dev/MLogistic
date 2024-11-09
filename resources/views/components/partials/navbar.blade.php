@@ -3,10 +3,11 @@
     <!-- Navbar Brand-->
 
     <a href="/" class="navbar-brand ps-3">
-        <img src="/css/logo.png" alt="Logo" class="img-fluid" style="max-width: 150px;" style=`filter: {{ auth()->user()->role === 'supplier' ? 'brightness(1)' : 'brightness(0) invert(1)' }};`>
-        <!-- MICROFINANCE -->
+        <img
+            src="/css/logo.png"
+            alt="Logo"
+            style="max-width: 150px; <?php echo (\Illuminate\Support\Facades\Auth::user()->role === 'supplier') ? 'filter: brightness(1)' : 'filter: brightness(0) invert(1)'; ?>;" />
     </a>
-
 
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>

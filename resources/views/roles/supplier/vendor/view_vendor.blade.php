@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4  tw-my-10">
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse ">
@@ -18,7 +18,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-5xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8">
+        <div class="tw-max-w-7xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8">
             <h2 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-text-center tw-mb-6">View Registered Vendors</h2>
 
             <!-- Contract Display Section -->
@@ -44,6 +44,11 @@
 
                     <div class="flex-grow">
                         <h3 class="tw-text-2xl tw-font-bold tw-text-gray-700 tw-mb-4">{{ $vendor->company_name }}</h3>
+                        <div class="tw-flex tw-items-center tw-space-x-4">
+                            <img src="{{ asset('storage/' . $vendor->supporting_documents_path) }}" alt="{{ $vendor->company_name }} logo"
+                                class="tw-rounded-md tw-shadow-lg tw-w-full tw-h-60 tw-object-cover"> 
+                        </div>
+
 
                         <div class="tw-flex tw-flex-col tw-space-y-2 tw-items-start tw-mb-4">
                             <div class="tw-w-full tw-overflow-y-auto tw-max-h-48 tw-p-2 tw-rounded-md tw-bg-gray-100">
@@ -67,9 +72,9 @@
                             </div>
 
                             <div class="tw-flex tw-items-center tw-space-x-2">
-                                <i class="fa-solid fa-file-pdf tw-text-gray-500"></i>
+                                <i class="fa-solid fa-eye tw-text-gray-500"></i>
                                 <a href="{{ asset('storage/' . $vendor->supporting_documents_path) }}" target="_blank" class="tw-text-gray-700">
-                                    View Document
+                                    View
                                 </a>
                             </div>
 

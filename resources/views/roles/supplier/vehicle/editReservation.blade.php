@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="container tw-my-10">
+    <div class="container-fluid px-4  tw-my-10">
         <!-- Breadcrumb -->
         <nav class="tw-flex tw-mb-5 max-sm:justify-center" aria-label="Breadcrumb">
             <ol class="tw-inline-flex tw-items-center tw-space-x-1 md:tw-space-x-2 rtl:tw-space-x-reverse">
@@ -18,7 +18,7 @@
             </ol>
         </nav>
 
-        <div class="tw-max-w-4xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6" data-aos="fade-up">
+        <div class="tw-max-w-7xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6" data-aos="fade-up">
             <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-text-center">Edit Vehicle Reservation Request</h2>
 
             <!-- Reservation Form -->
@@ -40,6 +40,15 @@
                 <div class="tw-mb-4">
                     <label for="reservationDate" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Reservation Date</label>
                     <input type="date" id="reservationDate" name="reservation_date" class="tw-block tw-w-full tw-px-4 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-shadow-sm tw-focus:ring-indigo-500 tw-focus:border-indigo-500" value="{{ $reservations->reservation_date }}" required>
+                    <script>
+                        document.getElementById('reservationDate').addEventListener('input', function() {
+                            var inputDate = new Date(this.value);
+                            if (inputDate.getDay() === 0 || inputDate.getDay() === 6) {
+                                alert('We are only available on weekdays.');
+                                this.value = '';
+                            }
+                        });
+                    </script>
                 </div>
 
                 <!-- Request Reservation Button -->

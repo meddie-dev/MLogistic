@@ -75,7 +75,6 @@
             <div class="collapse" id="collapseDocument" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link" href="/admin/document/storage">Document Storage </a>
-                    <a class="nav-link" href="/admin/document/tracking">Tracking and Retrieval</a>
                 </nav>
             </div>
 

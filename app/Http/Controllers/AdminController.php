@@ -6,6 +6,7 @@ use App\Models\SProfile;
 use App\Models\SRegistration;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Models\SDocument;
 use Carbon\Carbon;
 use App\Models\AuthLog;
 use App\Models\SVehicleReservation;
@@ -15,6 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
@@ -129,7 +131,7 @@ class AdminController extends Controller
                 // Column widths
                 $sheet->getColumnDimension('A')->setWidth(10);
                 $sheet->getColumnDimension('B')->setWidth(15);
-                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('C')->setWidth(30);
                 $sheet->getColumnDimension('D')->setWidth(20);
                 $sheet->getColumnDimension('E')->setWidth(25);
 
@@ -252,10 +254,10 @@ class AdminController extends Controller
                 $sheet->getColumnDimension('B')->setWidth(15);
                 $sheet->getColumnDimension('C')->setWidth(20);
                 $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(25);
+                $sheet->getColumnDimension('E')->setWidth(35);
                 $sheet->getColumnDimension('F')->setWidth(25);
-                $sheet->getColumnDimension('G')->setWidth(25);
-                $sheet->getColumnDimension('H')->setWidth(25);
+                $sheet->getColumnDimension('G')->setWidth(35);
+                $sheet->getColumnDimension('H')->setWidth(35);
 
                 // Borders for all data
                 $sheet->getStyle('A2:H' . (2 + $this->data->count()))->applyFromArray([
@@ -416,7 +418,9 @@ class AdminController extends Controller
 
     public function reservationHistory()
     {
-        return view('roles/admin.vehicle.history'); 
+        $reservations = SVehicleReservation::all();
+        $supplier = Supplier::all();
+        return view('roles/admin.vehicle.history', compact('reservations', 'supplier')); 
     }
 
     /*--------------------------------------------------------------
@@ -425,16 +429,15 @@ class AdminController extends Controller
 
     public function documentStorage()
     {
-        return view('roles/admin.document.storage'); // Organize logistics-related documents
+        $documents = SDocument::all();
+        $suppliers = Supplier::all();
+        return view('roles/admin.document.storage', compact('documents', 'suppliers')); 
     }
 
-    public function documentTracking()
+    public function viewStorage($id)
     {
-        return view('roles/admin.document.tracking'); // Quickly access documents
+        $supplier = Supplier::with('documents')->findOrFail($id); 
+        return view('roles/admin.document.view-storage', compact('supplier'));
     }
 
-    public function documentSecurity()
-    {
-        return view('roles/admin.document.security'); // Set access permissions and monitor security
-    }
 }

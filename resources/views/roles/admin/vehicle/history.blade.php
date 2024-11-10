@@ -13,13 +13,13 @@
                 </x-breadcrumb>
 
                 <x-breadcrumb :active="true" :isLast="true">
-                    Reservation History
+                    History and Logs
                 </x-breadcrumb>
             </ol>
         </nav>
 
         <div class="tw-max-w-5xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6" data-aos="fade-up">
-            <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-text-center">Admin Vehicle Reservation History</h2>
+            <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-text-center">Vehicle Reservation History and Logs</h2>
 
             <div class="tw-mt-6">
                 @php
@@ -36,6 +36,7 @@
                         <table class="tw-w-full tw-table-auto">
                             <thead>
                                 <tr>
+                                    <th class="tw-w-1/12 tw-text-left tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10" style="width: 10%">ID</th>
                                     <th class="tw-w-1/12 tw-text-left tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10" style="width: 10%">Reservation Date</th>
                                     <th class="tw-w-3/12 tw-text-left tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10" style="width: 30%">Vehicle Name</th>
                                     <th class="tw-w-2/12 tw-text-left tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10" style="width: 20%">Purpose</th>
@@ -45,16 +46,15 @@
                             </thead>
                             <tbody>
                                 @php
-                                $monthGroupedReservations = $yearReservations->groupBy(function($reservation) {
-                                    return \Carbon\Carbon::parse($reservation->reservation_date)->format('F');
-                                });
+                                $supplierGroupedReservations = $yearReservations->groupBy('supplier_id');
                                 @endphp
-                                @foreach ($monthGroupedReservations as $month => $monthReservations)
+                                @foreach ($supplierGroupedReservations as $supplier_id => $supplierReservations)
                                 <tr>
-                                    <td colspan="5" class="tw-px-4 tw-py-2 tw-bg-gray-100 tw-font-semibold">{{ $month }}</td>
+                                    <td colspan="6" class="tw-px-4 tw-py-2 tw-bg-gray-100 tw-font-semibold">{{ $supplierReservations->first()->supplier->name }}</td>
                                 </tr>
-                                @foreach ($monthReservations as $reservation)
+                                @foreach ($supplierReservations as $reservation)
                                 <tr>
+                                    <td class="tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10">{{ $reservation->id }}</td>
                                     <td class="tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10">{{ \Carbon\Carbon::parse($reservation->reservation_date)->format('d M, Y') }}</td>
                                     <td class="tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10">{{ $reservation->vehicle_name }}</td>
                                     <td class="tw-px-4 tw-py-2 md:tw-px-6 lg:tw-px-8 xl:tw-px-10">{{ $reservation->purpose }}</td>
@@ -82,11 +82,13 @@
                 <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">Update Reservation History</h3>
                 <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
                     <p>Please provide the necessary details to update a vehicle reservation history, including any changes made.</p> <br>
-                    <p>To view your updated reservations, click <a href="{{ route('admin-view-status') }}" class="tw-text-indigo-600 tw-underline">here</a>.</p>
+                    <p>To view your updated reservations, click <a href="" class="tw-text-indigo-600 tw-underline">here</a>.</p>
                 </div>
             </div>
         </div>
 
     </div>
 </x-layout>
+
+
 

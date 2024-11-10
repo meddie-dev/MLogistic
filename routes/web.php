@@ -83,7 +83,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
   
     // Document Tracking
     Route::get('/admin/document/storage', [AdminController::class, 'documentStorage']);
-    Route::get('/admin/document/tracking', [AdminController::class, 'documentTracking']);
+    Route::get('/admin/document/storage/{id}', [AdminController::class, 'viewStorage'])->name('view-storage');
    
 });
 

@@ -71,7 +71,7 @@
             const searchValue = this.value.toLowerCase();
             const documentItems = document.querySelectorAll('.document-item');
             const visibleDocuments = Array.from(documentItems).filter(function(item) {
-                const title = item.querySelector('.document-title').textContent.toLowerCase();
+                const title = item.querySelector('h4').textContent.toLowerCase();
                 return title.includes(searchValue);
             });
 

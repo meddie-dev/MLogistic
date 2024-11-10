@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained()->onDelete('cascade');
             $table->string('company_name');
             $table->string('company_address');
-            $table->string('company_email')->unique();
+            $table->string('company_email');
             $table->text('service_offerings');
             $table->text('key_contacts');
             $table->string('supporting_documents_path');

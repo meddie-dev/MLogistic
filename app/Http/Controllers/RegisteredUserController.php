@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\Admin;
 use Illuminate\Validation\Rules\Password;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +43,11 @@ class RegisteredUserController extends Controller
         // Redirect
         switch ($user->role) {
             case 'admin':
+                Admin::create([
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                ]);
                 return redirect('/admin/dashboard');
             case 'supplier':
                 Supplier::create([

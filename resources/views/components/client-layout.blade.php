@@ -33,7 +33,7 @@
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-    <!-- Client Logo -->
+      <!-- Client Logo -->
       <div class="col d-flex align-items-center">
         <a href="/" class="logo me-auto">
           <img src="/css/logo.png" alt="Logo" class="img-fluid" style="max-width: 150px;">
@@ -46,7 +46,6 @@
         </a>
       </div> -->
 
-
       <nav id="navmenu" class="navmenu" style="display: none;">
         <ul>
           <li><a href="#hero" id="home" class="active">Home<br></a></li>
@@ -57,19 +56,18 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-    
       @Guest
-        <a class="btn-getstarted" href="/login">Get Started</a>
+      <a class="btn-getstarted" href="/login">Get Started</a>
       @endGuest
 
       @auth
       @if(Auth::user()->role == 'admin')
-        <a class="btn-getstarted" href="/admin/dashboard">Dashboard</a>
-    @elseif(Auth::user()->role == 'supplier')
-        <a class="btn-getstarted" href="/supplier/dashboard">Dashboard</a>
-    @elseif(Auth::user()->role == 'constructor')
-        <a class="btn-getstarted" href="/constructor/dashboard">Dashboard</a>
-    @endif
+      <a class="btn-getstarted" href="/admin/dashboard">Dashboard</a>
+      @elseif(Auth::user()->role == 'supplier')
+      <a class="btn-getstarted" href="/supplier/dashboard">Dashboard</a>
+      @elseif(Auth::user()->role == 'constructor')
+      <a class="btn-getstarted" href="/constructor/dashboard">Dashboard</a>
+      @endif
       @endauth
     </div>
   </header>
@@ -171,10 +169,7 @@
       // Hide the footer by setting display to none
       footer.style.display = 'block';
     }
-
   </script>
-
-
 </body>
 
 </html>

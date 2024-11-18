@@ -58,7 +58,18 @@
           </div>
         </div>
         @endforeach
+        <a href="/admin/document/storage" class="tw-ml-3 tw-text-blue-500 tw-px-3 tw-py-1 tw-rounded-md ">Back</a>
+        <hr>
+      </div>
+      <div class="tw-mt-6" data-aos="fade-up">
+        <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">View Document Storage</h3>
+        <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
+          <p>View all the documents uploaded by {{$supplier->name}}. Click on the download button to view the document.</p>
+          <br>
+          <p>The actual file can be downloaded from the links above.</p>
+        </div>
       </div>
     </div>
+    
   </div>
 </x-layout>

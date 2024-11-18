@@ -49,6 +49,8 @@
           <button type="submit" class="tw-w-full tw-px-4 tw-py-2 tw-bg-indigo-600 tw-text-white tw-font-semibold tw-rounded-md tw-shadow tw-hover:bg-indigo-700 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-indigo-500 tw-focus:ring-offset-2">Upload Document</button>
         </div>
       </form>
+      <br>
+      <hr>
 
       <div class="tw-mt-6" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
         <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">Required Documents</h3>

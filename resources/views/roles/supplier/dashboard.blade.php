@@ -20,7 +20,7 @@
 
 
     <div class="row" data-aos="fade">
-      <div class="col-xl-6" data-aos="fade-right" data-aos-offset="300" data-aos-easing="ease-in-sine">
+      <div class="col-xl-6" data-aos="fade-right" >
         <div class="card mb-4">
           <div class="card-header">
             <i class="fas fa-file-upload me-1"></i>
@@ -31,7 +31,7 @@
           </div>
         </div>
       </div>
-      <div class="col-xl-6" data-aos="fade-left" data-aos-offset="300" data-aos-easing="ease-in-sine">
+      <div class="col-xl-6" data-aos="fade-left" >
         <div class="card mb-4">
 
           <div class="card-header">
@@ -84,7 +84,7 @@
     </div>
 
     <!-- Document Upload History -->
-    <div class="card mb-4">
+    <div class="card mb-4" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
       <div class="card-header">
         <i class="fas fa-file-upload me-1"></i>
         Document Upload History

@@ -5,7 +5,7 @@ use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\ConstructorController;
+use App\Http\Controllers\DistributorController;
 use App\Http\Controllers\SettingsController;
 
 /*--------------------------------------------------------------
@@ -71,13 +71,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
   Route::get('/admin/audit/reporting/{id}', [AdminController::class, 'viewReporting'])->name('view-reporting');
 
   // Fleet Management Module
+  Route::get('/admin/fleet/info', [AdminController::class, 'info']);
   Route::get('/admin/fleet/inventory', [AdminController::class, 'vehicleInventory']) ->name('vehicle-inventory');
   Route::get('/admin/fleet/inventory/create', [AdminController::class, 'createInventory']);
   Route::post('/admin/fleet/inventory', [AdminController::class, 'storeInventory'])->name('store-inventory');
   Route::get('/admin/fleet/inventory/{id}', [AdminController::class, 'viewInventory'])->name('view-inventory');
   Route::patch('/admin/fleet/inventory/{id}', [AdminController::class, 'updateInventory'])->name('update-inventory');
   Route::delete('/admin/fleet/inventory/{id}', [AdminController::class, 'deleteInventory'])->name('delete-inventory');
+
   Route::get('/admin/fleet/maintenance', [AdminController::class, 'maintenanceManagement']);
+  Route::patch('/admin/fleet/maintenance/{id}', [AdminController::class, 'updateMaintenance'])->name('update-maintenance');
+
 
   // Vehicle Reservation Module
   Route::get('/admin/vehicle/scheduling', [AdminController::class, 'reservationScheduling']);
@@ -133,18 +137,18 @@ Route::middleware(['auth', 'role:supplier'])->group(function () {
 });
 
 /*--------------------------------------------------------------
-# Routes for Authenticated Constructor
+# Routes for Authenticated Distributor
 --------------------------------------------------------------*/
-Route::middleware(['auth', 'role:constructor'])->group(function () {
-  Route::get('/constructor/dashboard', [ConstructorController::class, 'index']);
+Route::middleware(['auth', 'role:distributor'])->group(function () {
+  Route::get('/distributor/dashboard', [DistributorController::class, 'index']);
 
   // Routes for Vehicle Reservation Module
-  Route::get('/constructor/vehicle/request', [ConstructorController::class, 'requestReservation']);
-  Route::get('/constructor/vehicle/status', [ConstructorController::class, 'viewStatus']);
+  Route::get('/distributor/vehicle/request', [DistributorController::class, 'requestReservation']);
+  Route::get('/distributor/vehicle/status', [DistributorController::class, 'viewStatus']);
 
   // Routes for Document Management Module
-  Route::get('/constructor/document/access', [ConstructorController::class, 'accessProjectDocuments']);
+  Route::get('/distributor/document/access', [DistributorController::class, 'accessProjectDocuments']);
 
   // Routes for Vendor Management Module
-  Route::get('/constructor/vendor/approved', [ConstructorController::class, 'viewApprovedVendors']);
+  Route::get('/distributor/vendor/approved', [DistributorController::class, 'viewApprovedVendors']);
 });

@@ -13,7 +13,7 @@
         </x-breadcrumb>
 
         <x-breadcrumb :active="true" :isLast="true">
-          Trails
+          Trails and Logs
         </x-breadcrumb>
       </ol>
     </nav>

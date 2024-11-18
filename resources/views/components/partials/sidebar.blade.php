@@ -1,4 +1,4 @@
-<nav class="sb-sidenav accordion @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'constructor') sb-sidenav-light bg-light shadow @else sb-sidenav-dark @endif" id="sidenavAccordion">
+<nav class="sb-sidenav accordion @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'distributor' || auth()->user()->role === 'customer') sb-sidenav-light bg-light shadow @else sb-sidenav-dark @endif" id="sidenavAccordion">
   <div class="sb-sidenav-menu">
     <h6 class="tw-ml-4 tw-mb-4 tw-text-gray-500">Logistics 2</h6>
     <div class="nav">
@@ -136,8 +136,9 @@
       </div>
       @endif
 
-      @if(Auth::user()->role === 'constructor')
-      <!-- Constructor-specific links -->
+      @if(Auth::user()->role === 'distributor')
+      <!-- Distributor-specific links -->
+       
       <!-- Vehicle Reservation -->
       <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseVehicle" aria-expanded="false" aria-controls="collapseVehicle">
         <div class="sb-nav-link-icon"><i class="fa-solid fa-van-shuttle"></i></div>

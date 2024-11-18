@@ -65,8 +65,10 @@
       <a class="btn-getstarted" href="/admin/dashboard">Dashboard</a>
       @elseif(Auth::user()->role == 'supplier')
       <a class="btn-getstarted" href="/supplier/dashboard">Dashboard</a>
-      @elseif(Auth::user()->role == 'constructor')
-      <a class="btn-getstarted" href="/constructor/dashboard">Dashboard</a>
+      @elseif(Auth::user()->role == 'distributor')
+      <a class="btn-getstarted" href="/distributor/dashboard">Dashboard</a>
+      @elseif(Auth::user()->role == 'customer')
+      <a class="btn-getstarted" href="/customer/dashboard">Dashboard</a>
       @endif
       @endauth
     </div>

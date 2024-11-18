@@ -48,7 +48,19 @@
         @endforeach
       </ul>
       <p class="tw-text-center tw-text-gray-300 tw-font-medium tw-mt-4 no-results" style="display: none;">No account found. Try searching with a different keyword.</p>
+      <br>
+      <hr>
+      <div class="tw-mt-6" data-aos="fade-up">
+        <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">Document Storage</h3>
+        <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
+          <p>Monitor and track document storage with detailed logs. Understanding the actions and events within the system will help ensure accountability and security.</p> <br>
+          <p>
+            For more detailed information, examine individual log entries above.
+          </p>
+        </div>
+      </div>
     </div>
+    
   </div>
 </x-layout>
 

@@ -70,6 +70,8 @@
               <p class="tw-text-sm tw-text-gray-600">Year: {{ $vehicle->year }}</p>
               <p class="tw-text-sm tw-text-gray-600">Status: {{ ucwords($vehicle->status) }}</p>
               <p class="tw-text-sm tw-text-gray-600">Condition: {{ ucwords($vehicle->condition) }}</p>
+              <p class="tw-text-sm tw-text-gray-600">Last Maintenance: {{ $vehicle->last_maintenance ? \Carbon\Carbon::parse($vehicle->last_maintenance)->format('m/d/Y') : 'N/A' }}</p>
+              <p class="tw-text-sm tw-text-gray-600">Next Maintenance Due: {{ $vehicle->next_maintenance_due ? \Carbon\Carbon::parse($vehicle->next_maintenance_due)->format('m/d/Y') : 'N/A' }}</p>
             </div>
             <div class="tw-mt-4 tw-flex tw-justify-end">
               <a href="{{ route('view-inventory', $vehicle->id) }}" class="tw-bg-indigo-600 tw-text-white tw-px-3 tw-py-1 tw-rounded-md hover:tw-bg-indigo-200">Edit</a>
@@ -89,9 +91,9 @@
       <div class="tw-mt-6" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
         <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">Add New Vehicle</h3>
         <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
-          <p class="tw-mb-2">Please fill out the form below to add a new vehicle to the inventory:</p>
-          <p>To view your updated inventory, click <a href="/admin/fleet/inventory/create" class="tw-text-indigo-600 tw-underline">here</a>.</p>
-        </div>
+          <p>Please provide the necessary details to add a new vehicle to the inventory, including the vehicle's name, model, color, license plate, year, status, and condition.</p>
+          <br>
+          <p class="tw-mb-2">To view the different types of vehicles used in (Client Name), click <a href="/admin/fleet/info" class="tw-text-indigo-600 tw-underline">here</a>.</p>
       </div>
     </div>
   </div>

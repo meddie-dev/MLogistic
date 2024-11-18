@@ -80,7 +80,8 @@
                           <option value="" selected>Select Role</option>
                           <option value="admin">Admin</option>
                           <option value="supplier">Supplier</option>
-                          <option value="constructor">Constructor</option>
+                          <option value="distributor">Distributor</option>
+                          <option value="customer">Customer</option>
                         </select>
                       </div>
 

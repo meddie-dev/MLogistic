@@ -12,6 +12,10 @@
           Audit
         </x-breadcrumb>
 
+        <x-breadcrumb href="/admin/audit/reporting" :active="false" :isLast="false">
+          Reporting
+        </x-breadcrumb>
+
         <x-breadcrumb :active="true" :isLast="true">
           {{ $suppliers->name }}
         </x-breadcrumb>
@@ -20,7 +24,7 @@
 
     <div class="tw-max-w-7xl tw-mx-auto tw-mt-10 tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-8" data-aos="fade">
       <div class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-text-center ">
-        Audit Reporting - <span class="tw-text-gray-300">{{ $suppliers->name }}</span>
+        Audit Reporting
       </div>
       <div class="card-body">
         <div class="tw-overflow-x-auto">

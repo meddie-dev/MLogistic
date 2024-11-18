@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use GuzzleHttp\Client;
 
 // Excel
 use Maatwebsite\Excel\Facades\Excel;
@@ -371,7 +372,8 @@ class AdminController extends Controller
 
   public function viewReporting($id)
   {
-    $suppliers = Supplier::where('user_id', $id)->first();
+    $user = Auth::user();
+    $suppliers = Supplier::where('user_id',$id)->first();
     $profiles = SProfile::all();
     return view('roles/admin.audit.view-reporting', compact('suppliers', 'profiles'));
   }
@@ -381,7 +383,13 @@ class AdminController extends Controller
      # Fleet Management
      --------------------------------------------------------------*/
 
-  public function vehicleInventory()
+     public function info()
+     {
+       $vehicles = Vehicle::all();
+       return view('roles/admin.fleet.info', compact('vehicles'));
+     }
+  
+     public function vehicleInventory()
   {
     $vehicles = Vehicle::all();
     return view('roles/admin.fleet.inventory', compact('vehicles'));
@@ -395,46 +403,74 @@ class AdminController extends Controller
   }
 
   public function storeInventory(Request $request, Admin $admin)
-  {
+{
     $user = Auth::user();
     $admin = Admin::where('user_id', $user->id)->first();
 
     // Validate incoming request data
     $validated = $request->validate([
-      'name' => 'required|string|max:255',
-      'model' => 'required|string|max:255',
-      'color' => 'required|string|max:255',
-      'year' => 'required|integer',
-      'license_plate' => 'required|string|max:255',
-      'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
-      'status' => 'required|string|in:available,in-use,maintenance',
-      'condition' => 'required|string|in:good,fair,poor',
+        'name' => 'required|string|max:255',
+        'model' => 'required|string|max:255',
+        'color' => 'required|string|max:255',
+        'year' => 'required|integer',
+        'license_plate' => 'required|string|max:255',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+        'status' => 'required|string|in:available,in-use,maintenance',
+        'condition' => 'required|string|in:good,fair,poor',
     ]);
 
     // Ensure that the admin exists
     if (!$admin) {
-      return redirect()->route('vehicle-inventory')->with('error', 'Admin not found.');
+        return redirect()->route('vehicle-inventory')->with('error', 'Admin not found.');
     }
 
-    // Store the vehicle image
+    // Store the vehicle image temporarily
     $path = $request->file('image')->store('image_vehicle', 'public');
+    $imagePath = storage_path('app/public/' . $path);
+
+    // Initialize Guzzle client
+    $client = new Client();
+
+    // Call the Remove.bg API to remove the background
+    $response = $client->post('https://api.remove.bg/v1.0/removebg', [
+        'multipart' => [
+            [
+                'name'     => 'image_file',
+                'contents' => fopen($imagePath, 'r')
+            ],
+            [
+                'name'     => 'size',
+                'contents' => 'auto'
+            ]
+        ],
+        'headers' => [
+            'X-Api-Key' => env('REMOVE_BG_API_KEY', 'o1rtG6Rda4fKQHFWPrNi67CT')
+        ]
+    ]);
+
+    // Save the image without background
+    $noBgImagePath = 'image_vehicle/no-bg-' . time() . '.png'; // Create a unique name
+    $noBgFullPath = storage_path('app/public/' . $noBgImagePath);
+    $fp = fopen($noBgFullPath, 'wb');
+    fwrite($fp, $response->getBody());
+    fclose($fp);
 
     // Create the vehicle record in the database
     Vehicle::create([
-      'admin_id' => $admin->id,
-      'name' => $validated['name'],
-      'model' => $validated['model'],
-      'color' => $validated['color'],
-      'year' => $validated['year'],
-      'license_plate' => $validated['license_plate'],
-      'image' => $path,
-      'status' => $validated['status'],
-      'condition' => $validated['condition'],
+        'admin_id' => $admin->id,
+        'name' => $validated['name'],
+        'model' => $validated['model'],
+        'color' => $validated['color'],
+        'year' => $validated['year'],
+        'license_plate' => $validated['license_plate'],
+        'image' => $noBgImagePath, // Save the no-bg image path
+        'status' => $validated['status'],
+        'condition' => $validated['condition'],
     ]);
 
     // Redirect back with a success message
     return redirect()->route('vehicle-inventory')->with('success', 'Vehicle created successfully.');
-  }
+}
 
 
   public function viewInventory($id)
@@ -463,26 +499,66 @@ class AdminController extends Controller
       // Handle image upload
       if ($request->hasFile('image')) {
           // Delete the old image if it exists
-          if ($vehicle->path) {
-              Storage::disk('public')->delete($vehicle->path);
+          if ($vehicle->image) {
+              Storage::disk('public')->delete($vehicle->image); // Make sure to use $vehicle->image, not $vehicle->path
           }
   
-          // Store the new image and update the path
-          $Path = $request->file('image')->store('image_vehicle', 'public');
-          $vehicle->image = $Path;
+          // Store the new image temporarily
+          $tempImagePath = $request->file('image')->store('image_vehicle', 'public');
+          $imagePath = storage_path('app/public/' . $tempImagePath);
+  
+          // Initialize Guzzle client
+          $client = new Client();
+  
+          // Call the Remove.bg API to remove the background
+          try {
+              $response = $client->post('https://api.remove.bg/v1.0/removebg', [
+                  'multipart' => [
+                      [
+                          'name' => 'image_file',
+                          'contents' => fopen($imagePath, 'r')
+                      ],
+                      [
+                          'name' => 'size',
+                          'contents' => 'auto'
+                      ]
+                  ],
+                  'headers' => [
+                      'X-Api-Key' => env('REMOVE_BG_API_KEY', 'o1rtG6Rda4fKQHFWPrNi67CT')
+                  ]
+              ]);
+  
+              // Save the image without background
+              $noBgImagePath = 'image_vehicle/no-bg-' . time() . '.png'; // Create a unique name
+              $noBgFullPath = storage_path('app/public/' . $noBgImagePath);
+              $fp = fopen($noBgFullPath, 'wb');
+              fwrite($fp, $response->getBody());
+              fclose($fp);
+  
+              // Update the vehicle image path
+              $vehicle->image = $noBgImagePath;
+  
+              // Optionally delete the temporary uploaded image if needed
+              Storage::disk('public')->delete($tempImagePath);
+          } catch (\Exception $e) {
+              // Handle any exceptions from the API call
+              return redirect()->route('vehicle-inventory')->with('error', 'Error processing image: ' . $e->getMessage());
+          }
       }
   
-      // Update the vehicle record
+      // Update the other vehicle fields
       $vehicle->update([
           'name' => $request->name,
           'model' => $request->model,
           'color' => $request->color,
           'year' => $request->year,
-          'image' => $Path,
           'license_plate' => $request->license_plate,
           'status' => $request->status,
           'condition' => $request->condition,
       ]);
+  
+      // Save changes to the vehicle
+      $vehicle->save();
   
       // Redirect back with a success message
       return redirect()->route('vehicle-inventory')->with('success', 'Vehicle updated successfully.');
@@ -498,8 +574,23 @@ class AdminController extends Controller
 
   public function maintenanceManagement()
   {
-    return view('roles/admin.fleet.maintenance');
+     $vehicles = Vehicle::all();
+    return view('roles/admin.fleet.maintenance' , compact('vehicles'));
   }
+
+  public function updateMaintenance(Request $request, $id)
+{
+    $vehicle = Vehicle::findOrFail($id);
+
+    $vehicle->last_maintenance = now(); 
+    $vehicle->next_maintenance_due = now()->addMonths(3); 
+    $vehicle->status = 'available'; 
+    $vehicle->condition = 'good'; 
+
+    $vehicle->save();
+
+    return back()->with('success', 'Maintenance updated successfully!');
+}
 
   /*--------------------------------------------------------------
      # Vehicle Reservation

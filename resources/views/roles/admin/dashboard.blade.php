@@ -16,8 +16,8 @@
         <p class="tw-text-sm tw-text-gray-500  tw-indent-14 max-sm:tw-line-clamp-3">Welcome to the Admin Dashboard! From here, you can manage vendor approvals, review orders, access vendor profiles, monitor audit trails, manage fleet maintenance, oversee vehicle reservations, track documents, and more. If you have any questions or need any assistance, please don't hesitate to reach out to us. We're here to help!</p>
       </div>
     </div>
-    <div class="row">
-      <div class="col-xl-3 col-md-6">
+    <div class="row" data-aos="fade">
+      <div class="col-xl-3 col-md-6" >
         <div class="card bg-primary text-white mb-4">
           <div class="card-body">Primary Card</div>
           <div class="card-footer d-flex align-items-center justify-content-between">
@@ -55,7 +55,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xl-6">
+      <div class="col-xl-6" data-aos="fade-right">
         <div class="card mb-4">
           <div class="card-header">
             <i class="fas fa-chart-area me-1"></i>
@@ -97,7 +97,7 @@
           </div>
         </div>
       </div>
-      <div class="col-xl-6">
+      <div class="col-xl-6" data-aos="fade-left">
         <div class="card mb-4">
           <div class="card-header">
             <i class="fas fa-chart-area me-1"></i>
@@ -144,7 +144,7 @@
         </div>
       </div>
     </div>
-    <div class="card mb-4">
+    <div class="card mb-4" data-aos="fade-up">
       <div class="card-header">
         <i class="fas fa-table me-1"></i>
         Users List

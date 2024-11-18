@@ -27,13 +27,13 @@
           <table class="tw-w-full tw-bg-white tw-rounded-md tw-shadow-md tw-my-4" id="datatablesSimple">
             <thead class="tw-bg-gray-200 tw-text-gray-700">
               <tr>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-hashtag tw-mr-2"></i>ID</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-car tw-mr-2"></i>Supplier Name</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-file-pen tw-mr-2"></i>Created Date</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-clock tw-mr-2"></i>Time</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-at tw-mr-2"></i>Email</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-circle-info tw-mr-2"></i>Status</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-pen tw-mr-2"></i>Action</th>
+                <th class="tw-px-4 tw-py-2">ID</th>
+                <th class="tw-px-4 tw-py-2">Supplier Name</th>
+                <th class="tw-px-4 tw-py-2">Created Date</th>
+                <th class="tw-px-4 tw-py-2">Time</th>
+                <th class="tw-px-4 tw-py-2">Email</th>
+                <th class="tw-px-4 tw-py-2">Status</th>
+                <th class="tw-px-4 tw-py-2">Action</th>
               </tr>
             </thead>
             <tbody id="reservationRecords" class="tw-bg-white">

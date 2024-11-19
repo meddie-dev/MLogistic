@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\AdminController;
@@ -72,7 +74,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
   // Fleet Management Module
   Route::get('/admin/fleet/info', [AdminController::class, 'info']);
-  Route::get('/admin/fleet/inventory', [AdminController::class, 'vehicleInventory']) ->name('vehicle-inventory');
+  Route::get('/admin/fleet/inventory', [AdminController::class, 'vehicleInventory'])->name('vehicle-inventory');
   Route::get('/admin/fleet/inventory/create', [AdminController::class, 'createInventory']);
   Route::post('/admin/fleet/inventory', [AdminController::class, 'storeInventory'])->name('store-inventory');
   Route::get('/admin/fleet/inventory/{id}', [AdminController::class, 'viewInventory'])->name('view-inventory');
@@ -152,3 +154,124 @@ Route::middleware(['auth', 'role:distributor'])->group(function () {
   // Routes for Vendor Management Module
   Route::get('/distributor/vendor/approved', [DistributorController::class, 'viewApprovedVendors']);
 });
+
+/*--------------------------------------------------------------
+# Routes for Fraud Detection Pyhton
+--------------------------------------------------------------*/
+
+Route::get('/admin/fraud/detection', function () {
+  $filePath = 'R:/Desktop/MFLogistics/python/fraud_data_from_auth_logs.csv';
+  $fraudData = [];
+
+  // Step 1: Fetch data from SQLite and save as CSV
+  try {
+      Log::info('Fetching fraud data from SQLite database...');
+
+      // Use Python to fetch fraud data
+      $pythonScript = "R:/Desktop/MFLogistics/python/fetch_fraud_data.py"; // Update with your script path
+      $fetchOutput = shell_exec("python3 $pythonScript");
+      
+      // Check for errors in fetching data
+      if (strpos(strtolower($fetchOutput), 'error') !== false) {
+          return response()->json(['error' => 'Failed to fetch fraud data.']);
+      }
+
+      Log::info('Fraud data fetched successfully: ', ['output' => $fetchOutput]);
+  } catch (\Exception $e) {
+      Log::error('Error during data fetching: ' . $e->getMessage());
+      return response()->json(['error' => 'Error fetching fraud data.']);
+  }
+
+  // Step 2: Train the model
+  try {
+      // Log the training process
+      Log::info('Starting model training...');
+
+      // Call Python training script
+      $trainingOutput = shell_exec("python3 R:/Desktop/MFLogistics/python/train_model.py");
+      Log::info('Model Training Output:', ['output' => $trainingOutput]);
+
+      // Check for any issues in training
+      if (strpos(strtolower($trainingOutput), 'error') !== false) {
+          return response()->json(['error' => 'Model training failed. Please check the logs.']);
+      }
+
+      Log::info('Model training completed successfully.');
+  } catch (\Exception $e) {
+      Log::error('Error during model training: ' . $e->getMessage());
+      return response()->json(['error' => 'Error during model training.']);
+  }
+
+  // Step 3: Read fraud data from the CSV file
+  if (file_exists($filePath)) {
+      try {
+          if (($handle = fopen($filePath, 'r')) !== false) {
+              $headers = array_map('trim', fgetcsv($handle));  // Read headers
+
+              while (($row = fgetcsv($handle)) !== false) {
+                  if (count($row) === count($headers)) {
+                      $rowData = array_combine($headers, $row);
+                      $fraudData[] = $rowData;
+                  }
+              }
+              fclose($handle);
+          }
+      } catch (\Exception $e) {
+          Log::error('Error processing CSV file: ' . $e->getMessage());
+          return response()->json(['error' => 'Error processing fraud data CSV file.']);
+      }
+  } else {
+      return response()->json(['error' => 'Fraud data file not found.']);
+  }
+
+  // Log fraud data
+  Log::info('Prepared Data for Prediction:', $fraudData);
+
+  // Step 4: Pass fraud data to the Python script for prediction
+  $dataForPrediction = json_encode($fraudData);
+
+  // Create a temporary file to store fraud data
+  $tempFilePath = tempnam(sys_get_temp_dir(), 'fraud_data_');
+  file_put_contents($tempFilePath, $dataForPrediction);
+
+  try {
+      // Log the prediction process
+      Log::info('Calling Python prediction script...');
+
+      // Call Python script for prediction
+      $pythonOutput = shell_exec("python3 R:/Desktop/MFLogistics/python/predict.py $tempFilePath");
+
+      // Decode Python output
+      $predictionResult = json_decode($pythonOutput, true);
+
+      // Log the prediction results
+      Log::info('Python Prediction Result:', ['result' => $predictionResult]);
+
+      // Check for errors in Python output
+      if (isset($predictionResult['error'])) {
+          return response()->json(['error' => 'Prediction failed: ' . $predictionResult['error']]);
+      }
+
+      // Return the results to a view
+      return view('fraud' , [
+          'message' => 'Fraud detection completed successfully.',
+          'fraudData' => $fraudData,
+          'predictions' => $predictionResult
+      ]);
+  } catch (\Exception $e) {
+      Log::error('Error during prediction: ' . $e->getMessage());
+      return response()->json(['error' => 'Error during prediction.']);
+  } finally {
+      // Cleanup: Remove temporary file
+      if (file_exists($tempFilePath)) {
+          unlink($tempFilePath);
+      }
+  }
+});
+
+
+
+
+
+
+

@@ -58,6 +58,7 @@ class AdminController extends Controller
 
     return view('roles.admin.dashboard', compact('months', 'userCounts', 'users', 'roles', 'roleCounts'));
   }
+  
 
   public function exportActivityLog($user_id)
   {

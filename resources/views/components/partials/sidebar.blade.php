@@ -90,6 +90,18 @@
           <a class="nav-link" href="/admin/fleet/maintenance">Maintenance Management</a>
         </nav>
       </div>
+
+      <!-- Fraud Detection -->
+      <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseFraud" aria-expanded="false" aria-controls="collapseFraud">
+        <div class="sb-nav-link-icon"><i class="fa-solid fa-user-secret"></i></div>
+        Fraud Detection
+        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+      </a>
+      <div class="collapse" id="collapseFraud" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+        <nav class="sb-sidenav-menu-nested nav">
+          <a class="nav-link" href="/admin/fraud/detection">Fraud Detection Form</a>
+        </nav>
+      </div>
       @endif
 
       @if(Auth::user()->role === 'supplier')

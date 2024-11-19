@@ -8,8 +8,12 @@
           Dashboard
         </x-breadcrumb>
 
-        <x-breadcrumb href="/admin/vendor/approval" :active="false" :isLast="false">
-          Vendor Approval
+        <x-breadcrumb href="#" :active="true" :isLast="false">
+          Vendor
+        </x-breadcrumb>
+
+        <x-breadcrumb href="/admin/vendor/profiles" :active="false" :isLast="false">
+          Vendor Profiles
         </x-breadcrumb>
 
         <x-breadcrumb :active="true" :isLast="true">

@@ -25,7 +25,7 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', Password::min(8), 'confirmed'],
-            'role' => ['required', 'in:admin,supplier,constructor'], // Role validation
+            'role' => ['required', 'in:admin,supplier,distributor,customer'], // Role validation
         ]);
 
         // Store
@@ -56,8 +56,10 @@ class RegisteredUserController extends Controller
                     'name' => $user->first_name . ' ' . $user->last_name,
                 ]);
                 return redirect('/supplier/dashboard');
-            case 'constructor':
-                return redirect('/constructor/dashboard');
+            case 'distributor':
+                return redirect('/distributor/dashboard');
+            case 'customer':
+                return redirect('/customer/dashboard');
             default:
                 return redirect('/');
         }

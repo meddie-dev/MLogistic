@@ -9,7 +9,7 @@
         </x-breadcrumb>
 
         <x-breadcrumb href="" :active="true" :isLast="false">
-          Vehicle
+          Vehicle Reservation
         </x-breadcrumb>
 
         <x-breadcrumb href="/admin/vehicle/scheduling" :active="false" :isLast="false">
@@ -112,6 +112,10 @@
             </form>
           </tbody>
         </table>
+
+        <div class="tw-my-3">
+        <a href="/admin/vehicle/scheduling" class="tw-ml-3 tw-text-blue-500 tw-px-3 tw-py-1 tw-rounded-md ">Back</a>
+        </div>
         <hr>
 
       </div>

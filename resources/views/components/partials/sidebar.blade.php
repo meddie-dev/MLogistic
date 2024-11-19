@@ -1,4 +1,4 @@
-<nav class="sb-sidenav accordion @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'constructor') sb-sidenav-light bg-light shadow @else sb-sidenav-dark @endif" id="sidenavAccordion">
+<nav class="sb-sidenav accordion @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'distributor' || auth()->user()->role === 'customer') sb-sidenav-light bg-light shadow @else sb-sidenav-dark @endif" id="sidenavAccordion">
   <div class="sb-sidenav-menu">
     <h6 class="tw-ml-4 tw-mb-4 tw-text-gray-500">Logistics 2</h6>
     <div class="nav">
@@ -90,6 +90,18 @@
           <a class="nav-link" href="/admin/fleet/maintenance">Maintenance Management</a>
         </nav>
       </div>
+
+      <!-- Fraud Detection -->
+      <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseFraud" aria-expanded="false" aria-controls="collapseFraud">
+        <div class="sb-nav-link-icon"><i class="fa-solid fa-user-secret"></i></div>
+        Fraud Detection
+        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+      </a>
+      <div class="collapse" id="collapseFraud" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+        <nav class="sb-sidenav-menu-nested nav">
+          <a class="nav-link" href="/admin/fraud/detection">Fraud Detection Form</a>
+        </nav>
+      </div>
       @endif
 
       @if(Auth::user()->role === 'supplier')
@@ -136,8 +148,9 @@
       </div>
       @endif
 
-      @if(Auth::user()->role === 'constructor')
-      <!-- Constructor-specific links -->
+      @if(Auth::user()->role === 'distributor')
+      <!-- Distributor-specific links -->
+       
       <!-- Vehicle Reservation -->
       <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseVehicle" aria-expanded="false" aria-controls="collapseVehicle">
         <div class="sb-nav-link-icon"><i class="fa-solid fa-van-shuttle"></i></div>

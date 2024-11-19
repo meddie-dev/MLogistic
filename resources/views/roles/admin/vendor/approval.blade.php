@@ -27,12 +27,12 @@
           <table class="tw-w-full tw-bg-white tw-rounded-md tw-shadow-md tw-my-4" id="datatablesSimple">
             <thead class="tw-bg-gray-200 tw-text-gray-700">
               <tr>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-user tw-mr-2"></i>Supplier</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-building tw-mr-2"></i>Company Name</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-envelope tw-mr-2"></i>Company Email</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-circle-info tw-mr-2"></i>Status</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-calendar tw-mr-2"></i>Created Date</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-pen tw-mr-2"></i>Action</th>
+                <th class="tw-px-4 tw-py-2">Supplier</th>
+                <th class="tw-px-4 tw-py-2">Company Name</th>
+                <th class="tw-px-4 tw-py-2">Company Email</th>
+                <th class="tw-px-4 tw-py-2">Status</th>
+                <th class="tw-px-4 tw-py-2">Created Date</th>
+                <th class="tw-px-4 tw-py-2">Action</th>
               </tr>
             </thead>
             <tbody id="registrationRecords" class="tw-bg-white">
@@ -62,7 +62,7 @@
           </table>
           <hr>
         </div>
-        <div class="tw-mt-6">
+        <div class="tw-mt-6" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
           <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">Oversee Vendor Approvals and Monitor Onboarding Progress</h3>
           <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
             <p>This section allows you to view and monitor vendor approvals and onboarding progress. If a vendor's status is still pending, please wait for the admin to review their request.</p>

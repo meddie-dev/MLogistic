@@ -57,7 +57,7 @@
         <div class="tw-mt-10" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
           <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-4 ">Uploaded Documents</h3>
           <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
-            <p>These are the documents you have uploaded for the vendor registration process.</p>
+            <p>These are the documents you have uploaded for the vendor registration process.</p><br>
             <p>Click on the "View File" button to view the document.</p>
           </div>
         </div>

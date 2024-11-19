@@ -12,6 +12,10 @@
           Vendor
         </x-breadcrumb>
 
+        <x-breadcrumb href="/admin/vendor/approval" :active="false" :isLast="false">
+          Vendor Portal
+        </x-breadcrumb>
+
         <x-breadcrumb :active="true" :isLast="true">
           {{$registrations->company_name}}
         </x-breadcrumb>
@@ -50,16 +54,24 @@
           <span class="tw-text-gray-700">{{$registrations->status ?? 'Pending' }}</span>
         </div>
 
-        <div class="tw-flex tw-justify-end tw-mt-4 tw-space-x-2">
-          <button type="submit" form="reject-status"
-            class="tw-font-bold tw-py-2 tw-px-4 tw-rounded-md tw-text-sm tw-bg-red-500 hover:tw-bg-red-700 tw-text-white">
-            Reject
-          </button>
 
-          <button type="submit" form="update-status"
-            class="tw-font-bold tw-py-2 tw-px-4 tw-rounded-md tw-text-sm tw-bg-blue-500 hover:tw-bg-blue-700 tw-text-white">
-            Approve
-          </button>
+
+        <div class="tw-flex tw-justify-between tw-mt-4 tw-space-x-2">
+          <div class="tw-flex tw-justify-start">
+            <a href="{{ route('admin-vendor-approval') }}" class="tw-ml-3  tw-text-blue-500 tw-px-3 tw-py-1 tw-rounded-md ">Cancel</a>
+          </div>
+
+          <div>
+            <button type="submit" form="reject-status"
+              class="tw-font-bold tw-py-2 tw-px-4 tw-rounded-md tw-text-sm tw-bg-red-500 hover:tw-bg-red-700 tw-text-white">
+              Reject
+            </button>
+
+            <button type="submit" form="update-status"
+              class="tw-font-bold tw-py-2 tw-px-4 tw-rounded-md tw-text-sm tw-bg-blue-500 hover:tw-bg-blue-700 tw-text-white">
+              Approve
+            </button>
+          </div>
 
           <form action="{{ route('cancel-approval', $registrations->id) }}" class="tw-hidden" method="POST" id="reject-status">
             @csrf
@@ -73,7 +85,16 @@
             <input type="hidden" name="status" value="Approved">
           </form>
         </div>
+        <hr>
       </div>
+      <div class="tw-mt-6" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
+          <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">Processing Vendor Approvals</h3>
+          <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
+            <p>This section allows you to do actions related to vendor approvals and onboarding progress. Approved vendors will have access to the Procurement Module, where they can place service orders for their registered services.</p>
+            <br>
+            <p>To make an action use the Reject button or the Approve button above.</p>
+          </div>
+        </div>
     </div>
 
   </div>

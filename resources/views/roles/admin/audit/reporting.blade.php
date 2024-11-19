@@ -25,13 +25,13 @@
       </div>
       <div class="card-body">
         <div class="tw-overflow-x-auto">
-          <table class="tw-w-full tw-bg-white tw-rounded-md tw-shadow-md tw-my-4" id="reportTable">
+          <table class="tw-w-full tw-bg-white tw-rounded-md tw-shadow-md tw-my-4" id="datatablesSimple">
             <thead class="tw-bg-gray-200 tw-text-gray-700">
               <tr>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-user tw-mr-2"></i>User</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-calendar tw-mr-2"></i>Date</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-calendar tw-mr-2"></i>Status</th>
-                <th class="tw-px-4 tw-py-2"><i class="fa-solid fa-clipboard-list tw-mr-2"></i>Report</th>
+                <th class="tw-px-4 tw-py-2">User</th>
+                <th class="tw-px-4 tw-py-2">Date</th>
+                <th class="tw-px-4 tw-py-2">Status</th>
+                <th class="tw-px-4 tw-py-2">Report</th>
               </tr>
             </thead>
             <tbody id="reportRecords" class="tw-bg-white">

@@ -1,11 +1,11 @@
-<nav class="sb-topnav navbar navbar-expand @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'constructor') navbar-light bg-light @else navbar-dark bg-dark @endif">
+<nav class="sb-topnav navbar navbar-expand @if (auth()->user()->role === 'supplier' || auth()->user()->role === 'distributor') navbar-light bg-light @else navbar-dark bg-dark @endif">
 
   <!-- Navbar Brand-->
   <a href="/" class="navbar-brand ps-3">
     <img
       src="/css/logo.png"
       alt="Logo"
-      style="max-width: 150px; <?php echo (\Illuminate\Support\Facades\Auth::user()->role === 'supplier') ? 'filter: brightness(1)' : 'filter: brightness(0) invert(1)'; ?>;" />
+      style="max-width: 150px; <?php echo (\Illuminate\Support\Facades\Auth::user()->role === 'supplier' || \Illuminate\Support\Facades\Auth::user()->role === "distributor") ? 'filter: brightness(1)' : 'filter: brightness(0) invert(1)'; ?>;" />
   </a>
 
   <!-- Sidebar Toggle-->

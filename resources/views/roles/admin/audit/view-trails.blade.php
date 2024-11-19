@@ -8,12 +8,16 @@
           Dashboard
         </x-breadcrumb>
 
-        <x-breadcrumb href="/admin/audit/trails" :active="true" :isLast="false">
-          Audit Trails
+        <x-breadcrumb href="#" :active="true" :isLast="false">
+          Audit
+        </x-breadcrumb>
+
+        <x-breadcrumb href="/admin/audit/trails" :active="false" :isLast="false">
+          Trails and Logs
         </x-breadcrumb>
 
         <x-breadcrumb :active="true" :isLast="true">
-          View Trails
+          {{ $supplier->name }}
         </x-breadcrumb>
       </ol>
     </nav>
@@ -114,58 +118,71 @@
         @else
         <p class="tw-text-center tw-text-gray-600 tw-mt-6">No audit records found.</p>
         @endif
+        <div class="tw-flex tw-justify-start tw-mt-4">
+          <a href="/admin/audit/trails" class="tw-ml-3  tw-text-blue-500 tw-px-3 tw-py-1 tw-rounded-md ">Back</a>
+        </div>
+      </div>
+      <br>
+      <hr>
+      <div class="tw-mt-6" data-aos="fade-up">
+        <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mt-8 tw-mb-4">Monitor and Track Activities</h3>
+        <div class="tw-text-sm tw-text-gray-600 tw-mb-4">
+          <p>Use this section to monitor and track system activities with detailed logs. Understanding the actions and events within the system will help ensure accountability and security.</p>
+          <br>
+          <p>For more detailed information, examine individual log entries above.</p>
+        </div>
       </div>
     </div>
 
   </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const eventSelect = document.getElementById('event');
-      const ipAddressInput = document.getElementById('ip_address');
-
-      const filterRecords = () => {
-        const event = eventSelect.value.toLowerCase();
-        const ipAddress = ipAddressInput.value.trim().toLowerCase();
-
-        // Select all individual log entry containers
-        const auditRecords = document.querySelectorAll('#auditRecords > div:not(.tw-flex)');
-
-        let recordCount = 0;
-
-        auditRecords.forEach(record => {
-          // Locate event type and IP address elements within each log entry
-          const eventType = record.querySelector('.tw-flex-1').textContent.trim().toLowerCase();
-          const logIpAddress = record.querySelector('.tw-text-sm.tw-font-normal.tw-text-gray-700').textContent.trim().toLowerCase();
-
-          // Match conditions
-          const eventMatch = event === '' || eventType.includes(event);
-          const ipAddressMatch = ipAddress === '' || logIpAddress.includes(ipAddress);
-
-          // Toggle display based on match results
-          record.style.display = eventMatch && ipAddressMatch ? 'block' : 'none';
-
-          if (record.style.display === 'block') {
-            recordCount++;
-          }
-        });
-
-        const note = document.querySelector('#auditRecords > p');
-        if (recordCount === 0) {
-          if (!note) {
-            const newNote = document.createElement('p');
-            newNote.classList.add('tw-text-center', 'tw-text-gray-600', 'tw-mt-6');
-            newNote.textContent = 'No audit records found.';
-            document.getElementById('auditRecords').appendChild(newNote);
-          }
-        } else if (note) {
-          note.remove();
-        }
-      };
-
-      // Attach event listeners to the filters
-      eventSelect.addEventListener('change', filterRecords);
-      ipAddressInput.addEventListener('input', filterRecords);
-    });
-  </script>
-
 </x-layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const eventSelect = document.getElementById('event');
+    const ipAddressInput = document.getElementById('ip_address');
+
+    const filterRecords = () => {
+      const event = eventSelect.value.toLowerCase();
+      const ipAddress = ipAddressInput.value.trim().toLowerCase();
+
+      // Select all individual log entry containers
+      const auditRecords = document.querySelectorAll('#auditRecords > div:not(.tw-flex)');
+
+      let recordCount = 0;
+
+      auditRecords.forEach(record => {
+        // Locate event type and IP address elements within each log entry
+        const eventType = record.querySelector('.tw-flex-1').textContent.trim().toLowerCase();
+        const logIpAddress = record.querySelector('.tw-text-sm.tw-font-normal.tw-text-gray-700').textContent.trim().toLowerCase();
+
+        // Match conditions
+        const eventMatch = event === '' || eventType.includes(event);
+        const ipAddressMatch = ipAddress === '' || logIpAddress.includes(ipAddress);
+
+        // Toggle display based on match results
+        record.style.display = eventMatch && ipAddressMatch ? 'block' : 'none';
+
+        if (record.style.display === 'block') {
+          recordCount++;
+        }
+      });
+
+      const note = document.querySelector('#auditRecords > p');
+      if (recordCount === 0) {
+        if (!note) {
+          const newNote = document.createElement('p');
+          newNote.classList.add('tw-text-center', 'tw-text-gray-600', 'tw-mt-6');
+          newNote.textContent = 'No audit records found.';
+          document.getElementById('auditRecords').appendChild(newNote);
+        }
+      } else if (note) {
+        note.remove();
+      }
+    };
+
+    // Attach event listeners to the filters
+    eventSelect.addEventListener('change', filterRecords);
+    ipAddressInput.addEventListener('input', filterRecords);
+  });
+</script>

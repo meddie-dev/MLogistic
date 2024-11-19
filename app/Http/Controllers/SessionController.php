@@ -45,8 +45,10 @@ class SessionController extends Controller
             return redirect('/admin/dashboard');
         } elseif ($user->role === 'supplier') {
             return redirect('/supplier/dashboard');
-        } else {
-            return redirect('/constructor/dashboard');
+        } elseif ($user->role === 'distributor') {
+            return redirect('/distributor/dashboard');
+        }else {
+            return redirect('/customer/dashboard');
         }
     }
     
